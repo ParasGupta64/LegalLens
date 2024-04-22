@@ -12,7 +12,6 @@ from datasets import load_dataset
 from dotenv import dotenv_values
 from langchain.chains import LLMChain
 from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain_community.callbacks import get_openai_callback
 from langchain_openai import ChatOpenAI
 
 from prompting import prepare_prompted_inputs, load_predefined_prompt
@@ -85,5 +84,7 @@ insurance_text_snippets.map(
 )
 
 insurance_text_snippets["train"].to_json(
-    os.path.join("../datastore", "insurance_text_simplification.jsonl")
+    os.path.join("../datastore", "insurance_text_simplifications.jsonl"),
+    ensure_ascii=False,
+    encoding="utf-8",
 )
