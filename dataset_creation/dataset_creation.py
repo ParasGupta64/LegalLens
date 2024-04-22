@@ -73,8 +73,10 @@ def generate_simplification(rows):
 
     batch_outputs = []
     for batch_input in batch_inputs:
-        output = chain.invoke(batch_input)
-        batch_outputs.append(output["simplified_text"])
+        # We only get the return of the model as the text
+        output = chain.invoke(batch_input, return_only_outputs=True)
+        # The output text is under the "text" key
+        batch_outputs.append(output["text"])
 
     return {"simplified_text": batch_outputs}
 
