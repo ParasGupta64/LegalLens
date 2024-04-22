@@ -69,14 +69,48 @@ def legal_meaning(dataset: str, source: str):
     stream = add_label_options_to_stream(stream)
     blocks = [
         {"view_id": "html", "html_template": (root / "recipe.html").read_text()},
-        {"view_id": "choice", "text": None},
+        {
+            "view_id": "text_input",
+            "field_rows": 3,
+            "field_placeholder": "Tapez ici...",
+            "field_label": "Identifier le niveau de difficulté selon les choix suivants:",
+            "field_id": "difficulty_evaluation",
+            "field_suggestions": [
+                "Livre pour enfants",
+                "Recette de cuisine",
+                "Article de nouvelle",
+                "Article Wikipédia",
+                "Nouvelle ou roman",
+                "Dictée",
+                "Contrat d'assurance",
+                "Document légal",
+            ],
+        },
+        {
+            "view_id": "html",
+            "html_template": "<h4>Étape 2 de l'évaluation:</h4>Selon vous, quel est le niveau de précision légale du "
+            "texte généré par le modèle selon les trois choix suivants?",
+        },
+        {
+            "view_id": "choice",
+            "text": None,
+            "field_id": "meaning_evaluation",
+        },
+        {
+            "view_id": "html",
+            "html_template": "<h4>Étape 3 de l'évaluation:</h4>Selon votre réponse précédente sur l'échelle de "
+            "précision, indiquer la valeur exacte du niveau de précision légale du texte "
+            "généré par le modèle sur l'échelle appropriée?",
+        },
         {
             "view_id": "text_input",
             "field_rows": 1,
-            "field_label": "Valeur entre 1-10 (en nombre entier) selon le bloc sélectionner.",
+            "field_label": "Identifier le niveau de précision légale selon les choix suivants:",
             "field_placeholder": "Tapez ici...",
             "field_id": "evaluation",
+            "field_suggestions": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
         },
+        {"view_id": "html", "html_template": "<h4>Commentaires (si applicable):</h4>"},
         {
             "view_id": "text_input",
             "field_rows": 3,
