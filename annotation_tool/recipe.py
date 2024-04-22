@@ -27,9 +27,6 @@ def add_label_options_to_stream(stream):
         task["options"] = options
         task["original"] = task["text"]
         task["simplified"] = task["simplified_text"]
-        # task["text"] = "Texte original:\n\n" + task["text"] + "\n\n\nGénération du modèle:\n\n" + task[
-        #     "simplified_text"]
-        # task["html"] = " "
         yield task
 
 
