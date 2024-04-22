@@ -79,7 +79,7 @@ def generate_simplification(rows):
     return {"simplified_text": batch_outputs}
 
 
-insurance_text_snippets.map(
+insurance_text_snippets = insurance_text_snippets.map(
     function=generate_simplification, batched=True, batch_size=10
 )
 
