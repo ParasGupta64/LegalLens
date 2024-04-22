@@ -85,6 +85,5 @@ insurance_text_snippets = insurance_text_snippets.map(
 
 insurance_text_snippets["train"].to_json(
     os.path.join("../datastore", "insurance_text_simplifications.jsonl"),
-    ensure_ascii=False,
     encoding="utf-8",
 )
