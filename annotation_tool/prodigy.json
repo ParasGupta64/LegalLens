@@ -1,0 +1,17 @@
+{
+  "buttons": [
+    "accept",
+    "reject",
+    "ignore",
+    "undo"
+  ],
+  "batch_size": 10,
+  "history_size": 10,
+  "ui_lang": "fr",
+  "cardMinWidth": 675,
+  "custom_theme": {
+    "cardMaxWidth": 1500
+  },
+   "global_css": ".prodigy-content { text-align: left }",
+  "instructions": "./instructions.html"
+}
