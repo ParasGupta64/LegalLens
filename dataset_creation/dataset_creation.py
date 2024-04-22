@@ -84,6 +84,6 @@ insurance_text_snippets.map(
     function=generate_simplification, batched=True, batch_size=10
 )
 
-insurance_text_snippets.save_to_disk(
+insurance_text_snippets["train"].to_json(
     os.path.join("../datastore", "insurance_text_simplification.jsonl")
 )
