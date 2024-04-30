@@ -88,7 +88,7 @@ def legal_meaning(dataset: str, source: str):
         },
         {
             "view_id": "html",
-            "html_template": "<h4>Étape 2 de l'évaluation:</h4>Selon vous, quel est le niveau de précision légale du "
+            "html_template": "Étape 2 de l'évaluation: Selon vous, quel est le niveau de précision légale du "
             "texte généré par le modèle selon les trois choix suivants?",
         },
         {
@@ -98,7 +98,7 @@ def legal_meaning(dataset: str, source: str):
         },
         {
             "view_id": "html",
-            "html_template": "<h4>Étape 3 de l'évaluation:</h4>Selon votre réponse précédente sur l'échelle de "
+            "html_template": "Étape 3 de l'évaluation: Selon votre réponse précédente sur l'échelle de "
             "précision, indiquer la valeur exacte du niveau de précision légale du texte "
             "généré par le modèle sur l'échelle appropriée?",
         },
@@ -110,7 +110,7 @@ def legal_meaning(dataset: str, source: str):
             "field_id": "evaluation",
             "field_suggestions": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
         },
-        {"view_id": "html", "html_template": "<h4>Commentaires (si applicable):</h4>"},
+        {"view_id": "html", "html_template": "Commentaires (si applicable):"},
         {
             "view_id": "text_input",
             "field_rows": 3,
