@@ -12,6 +12,6 @@
   "custom_theme": {
     "cardMaxWidth": 1500
   },
-  "global_css": ".prodigy-content { text-align: left } .prodigy-buttons button:nth-child(2) { display: none } .prodigy-buttons button:nth-child(3) { display: none }",
+  "global_css": ".prodigy-content { text-align: left } .prodigy-buttons button:nth-child(2) { display: none } .prodigy-buttons button:nth-child(3) { display: none } .prodigy-buttons button:nth-child(4) { display: none }",
   "instructions": "./instructions.html"
 }
