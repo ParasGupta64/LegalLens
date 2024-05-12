@@ -1,3 +1,4 @@
+import random
 from pathlib import Path
 
 from prodigy.components.loaders import JSONL
@@ -65,8 +66,13 @@ def legal_meaning(dataset: str, source: str):
         (set_hashes(eg, input_keys=("text", "simplified_text")) for eg in stream)
     )
 
+    # Randomized the stream
+    # We need to do it before add_label_options_to_stream since it return a generator
+    random.shuffle(stream)
+
     # Add labels to each task in stream
     stream = add_label_options_to_stream(stream)
+
     blocks = [
         {"view_id": "html", "html_template": (root / "recipe.html").read_text()},
         {
