@@ -7,16 +7,14 @@ from prodigy.util import set_hashes
 
 options = [
     {
-        "id": "Précis",
-        "text": "Précis (entre 6 et 10)",
-        "style": {"background": "#36FF33"},
+        "id": "CLASSE A",
+        "text": "CLASSE A",
     },
     {
-        "id": "Pertinent",
-        "text": "Pertinence thématique (entre 2 et 5)",
-        "style": {"background": "#FFF12E"},
+        "id": "CLASSE B",
+        "text": "CLASSE B",
     },
-    {"id": "Off-track", "text": "Hors sujets (1)", "style": {"background": "#FF0800"}},
+    {"id": "CLASSE C", "text": "CLASSE C"},
 ]
 
 root = Path(__file__).parent
@@ -88,14 +86,13 @@ def legal_meaning(dataset: str, source: str):
                 "Article Wikipédia",
                 "Nouvelle ou roman",
                 "Dictée",
-                "Contrat d'assurance",
+                # "Contrat d'assurance",
                 "Document légal",
             ],
         },
         {
             "view_id": "html",
-            "html_template": "Étape 2 de l'évaluation: Selon vous, quel est le niveau de précision légale du "
-            "texte généré par le modèle selon les trois choix suivants?",
+            "html_template": "Étape 2 de l'évaluation: Selon vous, quel est la qualification du texte?",
         },
         {
             "view_id": "choice",
@@ -104,9 +101,8 @@ def legal_meaning(dataset: str, source: str):
         },
         {
             "view_id": "html",
-            "html_template": "Étape 3 de l'évaluation: Selon votre réponse précédente sur l'échelle de "
-            "précision, indiquer la valeur exacte du niveau de précision légale du texte "
-            "généré par le modèle sur l'échelle appropriée?",
+            "html_template": "Étape 3 de l'évaluation: Selon votre quel est le niveau de précision légale du texte "
+            "généré par le modèle sur une échelle de 1 à 10?",
         },
         {
             "view_id": "text_input",
