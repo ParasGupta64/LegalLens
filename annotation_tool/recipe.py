@@ -7,14 +7,77 @@ from prodigy.util import set_hashes
 
 options = [
     {
-        "id": "CLASSE A",
-        "text": "CLASSE A",
+        "id": "1",
+        "text": "Description de l'avenant/de la garantie",
     },
     {
-        "id": "CLASSE B",
-        "text": "CLASSE B",
+        "id": "2",
+        "text": "Condition(s) d’application",
     },
-    {"id": "CLASSE C", "text": "CLASSE C"},
+    {
+        "id": "3",
+        "text": "Exclusion(s) ou restriction(s)",
+    },
+    {
+        "id": "4",
+        "text": "Dommages",
+    },
+    {
+        "id": "5",
+        "text": "Indemnités",
+    },
+    {
+        "id": "6",
+        "text": "Définition",
+    },
+    {
+        "id": "7",
+        "text": "Frais",
+    },
+    {
+        "id": "8",
+        "text": "Prime",
+    },
+    {
+        "id": "9",
+        "text": "Obligation(s) de l’assuré",
+    },
+    {
+        "id": "10",
+        "text": "Conséquence(s) du non-respect des obligations",
+    },
+    {
+        "id": "11",
+        "text": "Obligation(s) de l’assureur",
+    },
+    {
+        "id": "12",
+        "text": "Droit(s) de l’assuré",
+    },
+    {
+        "id": "13",
+        "text": "Droit(s) de l’assureur",
+    },
+    {
+        "id": "14",
+        "text": "Subrogation",
+    },
+    {
+        "id": "15",
+        "text": "Prise d’effet, renouvellement",
+    },
+    {
+        "id": "16",
+        "text": "Fin du contrat, résiliation",
+    },
+    {
+        "id": "17",
+        "text": "Recours",
+    },
+    {
+        "id": "18",
+        "text": "Autres (inscrire dans commentaires si ajouts requis)",
+    },
 ]
 
 root = Path(__file__).parent
@@ -36,26 +99,22 @@ def add_label_options_to_stream(stream):
 )
 def legal_meaning(dataset: str, source: str):
     def validate_answer(eg):
-        high_level_annotation = eg.get("accept", [])
-        assert (
-            1 <= len(high_level_annotation) <= 3
-        ), "Sélectionner l'une des trois régions où le texte généré se situe."
-        region_level_annotation = eg.get("evaluation", None)
-        assert region_level_annotation is not None, (
-            "Sélectionner le niveau sur l'échelle de 1 à 10 où "
-            "le texte généré se situe."
-        )
-        if "." in region_level_annotation:
-            raise ValueError(
-                "Sélectionner un nombre entier (p. ex. 1, 2, 3) pour le positionnement sur l'échelle."
-            )
-        try:
-            region_level_annotation = int(region_level_annotation)
-        except ValueError:
-            raise ValueError("Inscrire un nombre pour le positionnement sur l'échelle.")
-        assert 10 >= region_level_annotation >= 1, (
-            "Inscrire un nombre entre 1 et 10 pour le positionnement " "sur l'échelle."
-        )
+        difficulty_evaluation = eg.get("difficulty_evaluation", None)
+
+        if difficulty_evaluation is None:
+            raise ValueError("Sélectionner le niveau de difficulté.")
+
+        high_level_annotation = eg.get("accept")
+        if len(high_level_annotation) == 0:
+            raise ValueError("Sélectionner la qualification.")
+
+        evaluation = eg.get("evaluation", None)
+        if evaluation is None:
+            raise ValueError("Sélectionner le niveau de précision légale.")
+
+        justifications = eg.get("justifications", None)
+        if justifications is None:
+            raise ValueError("Justifier votre niveau de précision légale.")
 
     # Load the stream from a JSONL file and return a generator that yields a
     # dictionary for each example in the data.
@@ -86,13 +145,12 @@ def legal_meaning(dataset: str, source: str):
                 "Article Wikipédia",
                 "Nouvelle ou roman",
                 "Dictée",
-                # "Contrat d'assurance",
                 "Document légal",
             ],
         },
         {
             "view_id": "html",
-            "html_template": "Étape 2 de l'évaluation: Selon vous, quel est la qualification du texte?",
+            "html_template": "Étape 2 de l'évaluation: Selon vous, quelle est la qualification du texte?",
         },
         {
             "view_id": "choice",
@@ -112,13 +170,16 @@ def legal_meaning(dataset: str, source: str):
             "field_id": "evaluation",
             "field_suggestions": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
         },
-        {"view_id": "html", "html_template": "Commentaires (si applicable):"},
+        {
+            "view_id": "html",
+            "html_template": "Étape 4 de l'évaluation: Justifier la présence d'erreur(s) fatale(s) "
+            "ou pour chaque imprécision:",
+        },
         {
             "view_id": "text_input",
             "field_rows": 3,
             "field_placeholder": "Tapez ici...",
-            "field_label": "Commentaires sur le texte ou l'annotation (si applicable).",
-            "field_id": "comments",
+            "field_id": "justifications",
         },
     ]
 
