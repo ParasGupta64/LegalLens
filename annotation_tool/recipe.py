@@ -159,7 +159,7 @@ def legal_meaning(dataset: str, source: str):
         },
         {
             "view_id": "html",
-            "html_template": "Étape 3 de l'évaluation: Selon votre quel est le niveau de précision légale du texte "
+            "html_template": "Étape 3 de l'évaluation: Selon vous, quel est le niveau de précision légale du texte "
             "généré par le modèle sur une échelle de 1 à 10?",
         },
         {
