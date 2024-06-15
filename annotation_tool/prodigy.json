@@ -5,6 +5,7 @@
     "ignore",
     "undo"
   ],
+  "feed_overlap": true,
   "batch_size": 10,
   "history_size": 10,
   "ui_lang": "fr",

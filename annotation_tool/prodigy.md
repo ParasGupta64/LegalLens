@@ -17,3 +17,4 @@ prodigy db-out legal_annotations > legal_annotations.jsonl
 To handle multiple annotators, we chose to use session rather than multiple process as
 suggested [here](https://support.prodi.gy/t/help-multiple-annotators-setup/3343/3).
 Thus, for an annotator called dave, the url will look like `http://<ip>>:8080/?session=dave`.
+
