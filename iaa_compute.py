@@ -1,0 +1,108 @@
+import numpy as np
+import pandas as pd
+from datasets import load_dataset
+from prodigy_iaa.measures import calculate_agreement
+
+# We use load_dataset from HG datasets library since it handle well JSONL
+annotated_data = load_dataset(
+    "datastore", data_files=["pretest_annotated_dataset.jsonl"]
+)
+
+# Each annotation per annotator is a separated row
+# "train" since by default HG set it as train
+extracted_annotations = {}
+
+difficulty_to_int_class = {
+    key: value
+    for key, value in zip(
+        [
+            "Livre pour enfants",
+            "Recette de cuisine",
+            "Article de nouvelle",
+            "Article Wikipédia",
+            "Nouvelle ou roman",
+            "Dictée",
+            "Document légal",
+        ],
+        range(0, 7),
+    )
+}
+
+
+def df_to_reliability(df):
+    # Taken from https://github.com/pmbaumgartner/prodigy-iaa/
+    # blob/a802f493e09473e6725367340dd316f44cd956d9/tests/conftest.py#L7C1-L12C28
+    """Converts a DataFrame to a list of lists, where missing values
+    are replaced with `None`."""
+    df = df.where(pd.notnull(df), None)
+    reliability_data = df.values.tolist()
+    return reliability_data
+
+
+def convert_name_to_unique_id(annotator):
+    if "William" in annotator:
+        unique_id = 1
+    elif "Eve" in annotator:
+        unique_id = 2
+    elif "Simon" in annotator:
+        unique_id = 3
+    else:
+        raise Exception("Unknown annotator")
+    return unique_id
+
+
+for row in annotated_data["train"]:
+    # The level of difficulty amongst the preset class (7 classes)
+    difficulty_level_annotation = difficulty_to_int_class.get(
+        row["difficulty_evaluation"]
+    )
+
+    # The qualification of the original text (18 classes)
+    qualification_annotation = int(row["accept"][0])
+
+    # The legal evaluation level between 1 and 10
+    legal_precision_annotation = int(row["evaluation"])
+
+    justifications_annotation = row["justifications"]
+
+    annotator = row["_session_id"]
+    annotator_numerical_id = convert_name_to_unique_id(annotator)
+
+    row_data = {
+        "difficulty_level_annotation": difficulty_level_annotation,
+        "qualification_annotation": qualification_annotation,
+        "legal_precision_annotation": legal_precision_annotation,
+        "justifications_annotation": justifications_annotation,
+    }
+
+    annotation_hash = row["_input_hash"]
+    if extracted_annotations.get(annotation_hash) is None:
+        extracted_annotations.update(
+            {annotation_hash: {str(annotator_numerical_id): row_data}}
+        )
+    else:
+        annotation_datas = extracted_annotations.get(annotation_hash)
+        annotation_datas.update({str(annotator_numerical_id): row_data})
+        extracted_annotations.update({annotation_hash: annotation_datas})
+
+dataframes = []
+
+tasks = ["difficulty_level", "qualification", "legal_precision", "justifications"]
+for task in tasks:
+    tasks_annotation = []
+    for sentence_idx, sentence in extracted_annotations.items():
+        annotations = []
+        for annotator_annotations in sentence.values():
+            annotations.append(annotator_annotations.get(f"{task}_annotation", ""))
+
+        tasks_annotation.append([sentence_idx] + annotations)
+
+    task_df = pd.DataFrame(
+        tasks_annotation,
+        columns=["sentence_id", "Annotator A", "Annotator B", "Annotator C"],
+    )
+
+    agreement = calculate_agreement(df_to_reliability(task_df))
+    dataframes.append((task, task_df, agreement))
+
+print("a")
