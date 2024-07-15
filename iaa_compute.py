@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from datasets import load_dataset
 from prodigy_iaa.measures import calculate_agreement
@@ -51,6 +50,7 @@ def convert_name_to_unique_id(annotator):
     return unique_id
 
 
+sentence_id_mapping = []
 for row in annotated_data["train"]:
     # The level of difficulty amongst the preset class (7 classes)
     difficulty_level_annotation = difficulty_to_int_class.get(
@@ -85,6 +85,10 @@ for row in annotated_data["train"]:
         annotation_datas.update({str(annotator_numerical_id): row_data})
         extracted_annotations.update({annotation_hash: annotation_datas})
 
+    original = row["original"]
+    simplified = row["simplified"]
+    sentence_id_mapping.append({"sentence_id": annotation_hash, "original": original, "simplified": simplified})
+
 dataframes = []
 
 tasks = ["difficulty_level", "qualification", "legal_precision", "justifications"]
@@ -105,4 +109,16 @@ for task in tasks:
     agreement = calculate_agreement(df_to_reliability(task_df))
     dataframes.append((task, task_df, agreement))
 
-print("a")
+for task, data, iaa in dataframes:
+    data.replace('\n', '', regex=True, inplace=True)
+    data.to_csv(f"pre_test_evaluation_{task}.tsv", index=False, sep="\t")
+    data.columns = ["sentence_id"] + [f"{column}-{task}" for column in data.columns if column != "sentence_id"]
+
+original_data = pd.DataFrame(sentence_id_mapping).drop_duplicates()
+
+merge_df = pd.merge(left=original_data, right=dataframes[0][1])
+merge_df = pd.merge(left=merge_df, right=dataframes[1][1])
+merge_df = pd.merge(left=merge_df, right=dataframes[2][1])
+merge_df = pd.merge(left=merge_df, right=dataframes[3][1])
+
+merge_df.to_csv(f"pre_test_evaluation_complete.tsv", index=False)

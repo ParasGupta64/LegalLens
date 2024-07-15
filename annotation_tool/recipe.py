@@ -139,13 +139,9 @@ def legal_meaning(dataset: str, source: str):
             "field_label": "Identifier le niveau de difficulté selon les choix suivants:",
             "field_id": "difficulty_evaluation",
             "field_suggestions": [
-                "Livre pour enfants",
-                "Recette de cuisine",
-                "Article de nouvelle",
-                "Article Wikipédia",
-                "Nouvelle ou roman",
-                "Dictée",
-                "Document légal",
+                "Plus simple à lire",
+                "Aussi simple à lire",
+                "Plus difficile à lire",
             ],
         },
         {
