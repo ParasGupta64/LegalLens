@@ -142,6 +142,7 @@ def legal_meaning(dataset: str, source: str):
                 "Plus simple à lire",
                 "Aussi simple à lire",
                 "Plus difficile à lire",
+                "Pas de simplification",
             ],
         },
         {

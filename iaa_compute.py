@@ -87,7 +87,9 @@ for row in annotated_data["train"]:
 
     original = row["original"]
     simplified = row["simplified"]
-    sentence_id_mapping.append({"sentence_id": annotation_hash, "original": original, "simplified": simplified})
+    sentence_id_mapping.append(
+        {"sentence_id": annotation_hash, "original": original, "simplified": simplified}
+    )
 
 dataframes = []
 
@@ -110,9 +112,11 @@ for task in tasks:
     dataframes.append((task, task_df, agreement))
 
 for task, data, iaa in dataframes:
-    data.replace('\n', '', regex=True, inplace=True)
+    data.replace("\n", "", regex=True, inplace=True)
     data.to_csv(f"pre_test_evaluation_{task}.tsv", index=False, sep="\t")
-    data.columns = ["sentence_id"] + [f"{column}-{task}" for column in data.columns if column != "sentence_id"]
+    data.columns = ["sentence_id"] + [
+        f"{column}-{task}" for column in data.columns if column != "sentence_id"
+    ]
 
 original_data = pd.DataFrame(sentence_id_mapping).drop_duplicates()
 
