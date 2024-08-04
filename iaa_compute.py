@@ -1,10 +1,13 @@
+import os
+
 import pandas as pd
 from datasets import load_dataset
 from prodigy_iaa.measures import calculate_agreement
 
 # We use load_dataset from HG datasets library since it handle well JSONL
 annotated_data = load_dataset(
-    "datastore", data_files=["pretest_annotated_dataset.jsonl"]
+    os.path.join("datastore", "annotated"),
+    data_files=["insurance_text_simplifications_50_annotated.jsonl"],
 )
 
 # Each annotation per annotator is a separated row
@@ -15,15 +18,12 @@ difficulty_to_int_class = {
     key: value
     for key, value in zip(
         [
-            "Livre pour enfants",
-            "Recette de cuisine",
-            "Article de nouvelle",
-            "Article Wikipédia",
-            "Nouvelle ou roman",
-            "Dictée",
-            "Document légal",
+            "Plus simple à lire",
+            "Aussi simple à lire",
+            "Plus difficile à lire",
+            "Pas de simplification",
         ],
-        range(0, 7),
+        range(0, 4),
     )
 }
 
@@ -113,7 +113,9 @@ for task in tasks:
 
 for task, data, iaa in dataframes:
     data.replace("\n", "", regex=True, inplace=True)
-    data.to_csv(f"pre_test_evaluation_{task}.tsv", index=False, sep="\t")
+    data.to_csv(
+        f"insurance_text_simplifications_50_annotated{task}.tsv", index=False, sep="\t"
+    )
     data.columns = ["sentence_id"] + [
         f"{column}-{task}" for column in data.columns if column != "sentence_id"
     ]
@@ -125,4 +127,5 @@ merge_df = pd.merge(left=merge_df, right=dataframes[1][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[2][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[3][1])
 
-merge_df.to_csv(f"pre_test_evaluation_complete.tsv", index=False)
+path = os.path.join("results", "insurance_text_simplifications_50_annotated.tsv")
+merge_df.to_csv(path, index=False)
