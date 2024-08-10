@@ -109,12 +109,13 @@ for task in tasks:
     )
 
     agreement = calculate_agreement(df_to_reliability(task_df))
+    print(agreement)
     dataframes.append((task, task_df, agreement))
 
 for task, data, iaa in dataframes:
     data.replace("\n", "", regex=True, inplace=True)
     data.to_csv(
-        f"insurance_text_simplifications_50_annotated{task}.tsv", index=False, sep="\t"
+        os.path.join("results", f"insurance_text_simplifications_50_annotated_{task}.tsv"), index=False, sep="\t"
     )
     data.columns = ["sentence_id"] + [
         f"{column}-{task}" for column in data.columns if column != "sentence_id"

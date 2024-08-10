@@ -12,7 +12,7 @@
   "custom_theme": {
     "cardMaxWidth": 1500
   },
-  "total_examples_target": 297,
+  "total_examples_target": 50,
   "global_css": ".prodigy-content { text-align: left }",
   "instructions": "./instructions.html"
 }
