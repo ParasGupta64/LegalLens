@@ -1,5 +1,6 @@
 import os
 
+import pandas as pd
 from datasets import load_dataset, Dataset
 
 dataset = load_dataset(
@@ -63,6 +64,19 @@ dataset = dataset.remove_columns(["simplicity", "qualification", "justifications
 # it is easier to just use "label" with the default HuggingFace training setup.
 dataset = dataset.rename_column("legal_meaning", "label")
 dataset = dataset.map(lambda x: {"label": float(x["label"])})
+
+# We use Pandas to group the evaluation and compute and average scores.
+df = dataset.to_pandas()
+df = (
+    df.groupby(["original", "simplification"])["label"]
+    .mean()
+    .round()
+    .to_frame()
+    .reset_index()
+)
+
+dataset = Dataset.from_pandas(df)
+
 dataset.to_json(
     os.path.join("datastore", "training", "insurance_text_simplifications.jsonl"),
     force_ascii=False,
