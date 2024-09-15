@@ -62,6 +62,7 @@ dataset.to_json(
 dataset = dataset.remove_columns(["simplicity", "qualification", "justifications"])
 # it is easier to just use "label" with the default HuggingFace training setup.
 dataset = dataset.rename_column("legal_meaning", "label")
+dataset = dataset.map(lambda x: {"label": int(x["label"])})
 dataset.to_json(
     os.path.join("datastore", "training", "insurance_text_simplifications.jsonl"),
     force_ascii=False,
