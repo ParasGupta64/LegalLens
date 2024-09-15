@@ -215,21 +215,24 @@ def create_holdout_dataset(running_idx: int):
 
     # The running_idx is the next row id that we would have used for the next loop
     # this, the previous (running_idx - 1) is the latest use sentence.
-    # The holdout is of a fixed size of 200 sentences.
-    length = 200
+    # The holdout is of a fixed size of holdout_size sentences.
+    holdout_size = 297  # Same as the base dataset size.
+    length = holdout_size
     holdout_identical_dataset = pd.DataFrame(
         {
-            "original": unrelated_sentences["text"][running_idx : running_idx + 200],
+            "original": unrelated_sentences["text"][
+                running_idx : running_idx + holdout_size
+            ],
             "simplification": unrelated_sentences["text"][
-                running_idx : running_idx + 200
+                running_idx : running_idx + holdout_size
             ],
             "label": [10.0] * length,
         }
     )
     holdout_identical_dataset = Dataset.from_pandas(holdout_identical_dataset)
 
-    # We use a fixed number of rows (200) as per the previous holdout.
-    rows = unrelated_sentences[running_idx : running_idx + 200]["text"]
+    # We use a fixed number of rows (holdout_size) as per the previous holdout.
+    rows = unrelated_sentences[running_idx : running_idx + holdout_size]["text"]
 
     unrelated_pairs = []
     resampled = 0
@@ -238,7 +241,7 @@ def create_holdout_dataset(running_idx: int):
     for row in tqdm(
         rows,
         desc="Unrelated pairs creation",
-        total=200,
+        total=holdout_size,
     ):
         valid = False
         while not valid:
