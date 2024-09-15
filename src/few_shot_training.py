@@ -55,33 +55,34 @@ root = args.root
 data_augmentation = args.data_augmentation
 
 set_seeds(seed=seed)
+root_dir = os.path.join("..", "datastore", "training")
 
 if data_augmentation:
     train = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=[
             "train_insurance_text_simplifications_with_data_augmentation.jsonl"
         ],
     )
     dev = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=["dev_insurance_text_simplifications_with_data_augmentation.jsonl"],
     )
     test = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=["test_insurance_text_simplifications_with_data_augmentation.jsonl"],
     )
 else:
     train = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=["train_insurance_text_simplifications.jsonl"],
     )
     dev = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=["dev_insurance_text_simplifications.jsonl"],
     )
     test = load_dataset(
-        os.path.join("..", "datastore", "training"),
+        root_dir,
         data_files=["test_insurance_text_simplifications.jsonl"],
     )
 
@@ -89,8 +90,12 @@ legal_precision_annotation_dataset = DatasetDict(
     {"train": train, "dev": dev, "test": test}
 )
 
-# holdout_identical_dataset = load_dataset("davebulaval/CSMD", "meaning_holdout_identical")
-# holdout_unrelated_dataset = load_dataset("davebulaval/CSMD", "meaning_holdout_unrelated")
+holdout_identical_dataset = load_dataset(
+    root_dir, data_files=["holdout_identical_insurance_text_simplifications"]
+)
+holdout_unrelated_dataset = load_dataset(
+    root_dir, data_files=["holdout_unrelated_insurance_text_simplifications"]
+)
 
 checkpoint = "bert-base-uncased"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)

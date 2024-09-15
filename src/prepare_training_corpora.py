@@ -13,9 +13,10 @@ from src.dataset_tools import (
 )
 
 seed = 42
+root_dir = os.path.join("..", "datastore")
 
 dataset = load_dataset(
-    os.path.join("..", "datastore", "annotated"),
+    os.path.join(root_dir, "annotated"),
     data_files=["insurance_text_simplifications_annotated.jsonl"],
 )
 
@@ -24,30 +25,26 @@ dataset = clean_columns_type(dataset)
 
 # We create the release dataset with all the columns
 dataset.to_json(
-    os.path.join("../datastore", "released", "insurance_text_simplifications.jsonl"),
+    os.path.join(root_dir, "released", "insurance_text_simplifications.jsonl"),
     force_ascii=False,
 )
 
 dataset = create_training_corpus(dataset)
 
+root_dir_training = os.path.join(root_dir, "training")
+
 train_set, dev_set, test_set = create_splits(dataset, seed=seed)
 
 train_set.to_json(
-    os.path.join(
-        "..", "datastore", "training", "train_insurance_text_simplifications.jsonl"
-    ),
+    os.path.join(root_dir_training, "train_insurance_text_simplifications.jsonl"),
     force_ascii=False,
 )
 dev_set.to_json(
-    os.path.join(
-        "..", "datastore", "training", "dev_insurance_text_simplifications.jsonl"
-    ),
+    os.path.join(root_dir_training, "dev_insurance_text_simplifications.jsonl"),
     force_ascii=False,
 )
 test_set.to_json(
-    os.path.join(
-        "..", "datastore", "training", "test_insurance_text_simplifications.jsonl"
-    ),
+    os.path.join(root_dir_training, "test_insurance_text_simplifications.jsonl"),
     force_ascii=False,
 )
 
@@ -68,30 +65,37 @@ dataset = concatenate_datasets(
 
 train_set.to_json(
     os.path.join(
-        "..",
-        "datastore",
-        "training",
+        root_dir_training,
         "train_insurance_text_simplifications_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
 dev_set.to_json(
     os.path.join(
-        "..",
-        "datastore",
-        "training",
+        root_dir_training,
         "dev_insurance_text_simplifications_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
 test_set.to_json(
     os.path.join(
-        "..",
-        "datastore",
-        "training",
+        root_dir_training,
         "test_insurance_text_simplifications_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
 
-holdout = create_holdout_dataset(running_idx=running_idx)
+holdout_identical_dataset, holdout_unrelated_dataset = create_holdout_dataset(
+    running_idx=running_idx
+)
+
+holdout_identical_dataset.to_json(
+    os.path.join(
+        root_dir_training, "holdout_identical_insurance_text_simplifications.jsonl"
+    ),
+)
+holdout_unrelated_dataset.to_json(
+    os.path.join(
+        root_dir_training, "holdout_unrelated_insurance_text_simplifications.jsonl"
+    ),
+)

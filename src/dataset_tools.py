@@ -228,18 +228,21 @@ def create_holdout_dataset(running_idx: int):
     )
     holdout_identical_dataset = Dataset.from_pandas(holdout_identical_dataset)
 
+    # We use a fixed number of rows (200) as per the previous holdout.
+    rows = unrelated_sentences[running_idx : running_idx + 200]["text"]
+
     unrelated_pairs = []
     resampled = 0
-
+    running_idx = 0
     total_len = len(unrelated_sentences)
     for row in tqdm(
-        unrelated_sentences[running_idx : running_idx + 200],
+        rows,
         desc="Unrelated pairs creation",
-        total=len(unrelated_sentences),
+        total=200,
     ):
         valid = False
         while not valid:
-            original = row["original"]
+            original = row
             selected_unrelated_simplification = unrelated_sentences["text"][
                 total_len - running_idx - 1
             ]
@@ -249,6 +252,11 @@ def create_holdout_dataset(running_idx: int):
                 repl="",
                 string=selected_unrelated_simplification,
             )
+            row = re.sub(
+                pattern=r"[0-9]+\.*[0-9]*\. +",
+                repl="",
+                string=row,
+            )
             # We also clean the new line and carriage return
             selected_unrelated_simplification = (
                 selected_unrelated_simplification.replace("\n", " ")
@@ -256,6 +264,8 @@ def create_holdout_dataset(running_idx: int):
             selected_unrelated_simplification = (
                 selected_unrelated_simplification.replace("\r", " ")
             )
+            row = row.replace("\n", " ")
+            row = row.replace("\r", " ")
 
             # We use the ROUGE and BLEU score to evaluate if the content seems related or not (in terms of vocabulary
             # not meaning).
