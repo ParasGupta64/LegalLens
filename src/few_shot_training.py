@@ -28,13 +28,11 @@ log = logging.getLogger("pytorch_lightning")
 log.propagate = False
 log.setLevel(logging.ERROR)
 
-num_epoch = 100
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--seed",
     type=int,
-    default=45,
+    default=42,
     help="The seed to use for training.",
 )
 
@@ -48,8 +46,15 @@ parser.add_argument(
 parser.add_argument(
     "--data_augmentation",
     type=bool_parse,
-    default=True,
+    default=False,
     help="Either or not to do data augmentation.",
+)
+
+parser.add_argument(
+    "--epochs",
+    type=int,
+    default=100,
+    help="The number of epochs to complete.",
 )
 
 args = parser.parse_args()
@@ -57,6 +62,7 @@ args = parser.parse_args()
 seed = args.seed
 root = args.root
 data_augmentation = args.data_augmentation
+num_epoch = args.epochs
 
 set_seeds(seed=seed)
 root_dir = os.path.join("..", "datastore", "training")
@@ -95,10 +101,10 @@ legal_precision_annotation_dataset = DatasetDict(
 )
 
 holdout_identical_dataset = load_dataset(
-    root_dir, data_files=["holdout_identical_insurance_text_simplifications"]
+    root_dir, data_files=["holdout_identical_insurance_text_simplifications.jsonl"]
 )
 holdout_unrelated_dataset = load_dataset(
-    root_dir, data_files=["holdout_unrelated_insurance_text_simplifications"]
+    root_dir, data_files=["holdout_unrelated_insurance_text_simplifications.jsonl"]
 )
 
 checkpoint = "bert-base-uncased"
