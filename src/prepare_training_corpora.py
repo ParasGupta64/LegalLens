@@ -9,6 +9,7 @@ from src.dataset_tools import (
     create_splits,
     create_identical_pairs_data_augmentation_dataset,
     create_unrelated_pairs_data_augmentation_dataset,
+    create_holdout_dataset,
 )
 
 seed = 42
@@ -53,7 +54,7 @@ test_set.to_json(
 identical_pairs_data_augmentation_dataset = (
     create_identical_pairs_data_augmentation_dataset(dataset)
 )
-unrelated_pairs_data_augmentation_dataset = (
+unrelated_pairs_data_augmentation_dataset, running_idx = (
     create_unrelated_pairs_data_augmentation_dataset(dataset)
 )
 
@@ -92,3 +93,5 @@ test_set.to_json(
     ),
     force_ascii=False,
 )
+
+holdout = create_holdout_dataset(running_idx=running_idx)

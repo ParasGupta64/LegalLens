@@ -56,35 +56,38 @@ data_augmentation = args.data_augmentation
 
 set_seeds(seed=seed)
 
-# if data_augmentation:
-legal_precision_annotation_dataset = load_dataset(
-    os.path.join("..", "datastore", "training"),
-    data_files=["insurance_text_simplifications.jsonl"],
-)
-
-# 60-10-30 train-test ratio
-# 30% for test
-trainvalid_test = legal_precision_annotation_dataset["train"].train_test_split(
-    test_size=0.3, shuffle=True, seed=seed
-)  # 70 is the 60-10 set for train/dev.
-# Split the train in 60-10
-train_valid = trainvalid_test["train"].train_test_split(
-    test_size=0.1, shuffle=True, seed=seed
-)
-
-# The train set is the "train" set in the train_valid
-# The dev set is the "test" set in the train_valid
-# The test set is the "test" set in the trainvalid_test
-train_set = train_valid["train"]
-dev_set = train_valid["test"]
-test_set = trainvalid_test["test"]
+if data_augmentation:
+    train = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=[
+            "train_insurance_text_simplifications_with_data_augmentation.jsonl"
+        ],
+    )
+    dev = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=["dev_insurance_text_simplifications_with_data_augmentation.jsonl"],
+    )
+    test = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=["test_insurance_text_simplifications_with_data_augmentation.jsonl"],
+    )
+else:
+    train = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=["train_insurance_text_simplifications.jsonl"],
+    )
+    dev = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=["dev_insurance_text_simplifications.jsonl"],
+    )
+    test = load_dataset(
+        os.path.join("..", "datastore", "training"),
+        data_files=["test_insurance_text_simplifications.jsonl"],
+    )
 
 legal_precision_annotation_dataset = DatasetDict(
-    {"train": train_set, "dev": dev_set, "test": test_set}
+    {"train": train, "dev": dev, "test": test}
 )
-
-# else:
-#     csmd_dataset = load_dataset("davebulaval/CSMD", "meaning")
 
 # holdout_identical_dataset = load_dataset("davebulaval/CSMD", "meaning_holdout_identical")
 # holdout_unrelated_dataset = load_dataset("davebulaval/CSMD", "meaning_holdout_unrelated")

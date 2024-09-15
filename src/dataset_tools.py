@@ -6,6 +6,9 @@ from datasets import Dataset, load_dataset, concatenate_datasets
 from evaluate import load
 from tqdm import tqdm
 
+rouge = load("rouge")
+bleu = load("sacrebleu")
+
 
 def clean_columns(dataset):
     # We keep the original, the simplified, the difficulty evaluation (difficulty_evaluation),
@@ -114,23 +117,19 @@ def create_identical_pairs_data_augmentation_dataset(dataset):
     ):
         sentence_pairs.append(
             {
-                "original": row["original"],
-                "simplification": row["original"],
+                "original": row["original"][0],
+                "simplification": row["original"][0],
                 "label": 10.0,
             }
         )
 
-    identical_df = pd.DataFrame.from_dict(sentence_pairs, orient="columns")
-    return identical_df
+    return Dataset.from_list(sentence_pairs)
 
 
 def create_unrelated_pairs_data_augmentation_dataset(dataset):
     """
     todo: change load to the official dataset when article is published
     """
-
-    rouge = load("rouge")
-    bleu = load("sacrebleu")
 
     datastore_root_path = os.path.join("..", "datastore", "references")
 
@@ -143,6 +142,7 @@ def create_unrelated_pairs_data_augmentation_dataset(dataset):
     unrelated_sentences = concatenate_datasets(
         [quebec_insurance_legislature["train"], quebec_traffic_legislature["train"]]
     )
+    print(f"Size of the unrelated sentences dataset {len(unrelated_sentences)}")
 
     unrelated_pairs = []
     running_idx = 0
@@ -153,7 +153,7 @@ def create_unrelated_pairs_data_augmentation_dataset(dataset):
     ):
         valid = False
         while not valid:
-            original = row["original"]
+            original = row["original"][0]
             selected_unrelated_simplification = unrelated_sentences["text"][running_idx]
             # We clean the pattern of type "1. [...]" or "12.1 [...]" since it is not a common way top write.
             selected_unrelated_simplification = re.sub(
@@ -179,10 +179,10 @@ def create_unrelated_pairs_data_augmentation_dataset(dataset):
             )["score"]
 
             if (
-                rouge_score["rouge1"] < 0.20
-                and rouge_score["rouge2"] < 0.20
-                and rouge_score["rougeL"] < 0.20
-                and bleu_score < 20
+                rouge_score["rouge1"] < 0.25
+                and rouge_score["rouge2"] < 0.25
+                and rouge_score["rougeL"] < 0.25
+                and bleu_score < 25
             ):
                 unrelated_pairs.append(
                     {
@@ -196,5 +196,93 @@ def create_unrelated_pairs_data_augmentation_dataset(dataset):
             else:
                 running_idx += 1
                 resampled += 1
-    unrelated_dataset_df = pd.DataFrame.from_dict(unrelated_pairs, orient="columns")
-    return unrelated_dataset_df
+    print(f"Number of resampled pairs: {resampled}")
+    return Dataset.from_list(unrelated_pairs), running_idx
+
+
+def create_holdout_dataset(running_idx: int):
+    datastore_root_path = os.path.join("..", "datastore", "references")
+
+    quebec_insurance_legislature = load_dataset(
+        datastore_root_path, data_files=["A-25.jsonl"]
+    )
+    quebec_traffic_legislature = load_dataset(
+        datastore_root_path, data_files=["code_securite_routiere.jsonl"]
+    )
+    unrelated_sentences = concatenate_datasets(
+        [quebec_insurance_legislature["train"], quebec_traffic_legislature["train"]]
+    )
+
+    # The running_idx is the next row id that we would have used for the next loop
+    # this, the previous (running_idx - 1) is the latest use sentence.
+    # The holdout is of a fixed size of 200 sentences.
+    length = 200
+    holdout_identical_dataset = pd.DataFrame(
+        {
+            "original": unrelated_sentences["text"][running_idx : running_idx + 200],
+            "simplification": unrelated_sentences["text"][
+                running_idx : running_idx + 200
+            ],
+            "label": [10.0] * length,
+        }
+    )
+    holdout_identical_dataset = Dataset.from_pandas(holdout_identical_dataset)
+
+    unrelated_pairs = []
+    resampled = 0
+
+    total_len = len(unrelated_sentences)
+    for row in tqdm(
+        unrelated_sentences[running_idx : running_idx + 200],
+        desc="Unrelated pairs creation",
+        total=len(unrelated_sentences),
+    ):
+        valid = False
+        while not valid:
+            original = row["original"]
+            selected_unrelated_simplification = unrelated_sentences["text"][
+                total_len - running_idx - 1
+            ]
+            # We clean the pattern of type "1. [...]" or "12.1 [...]" since it is not a common way top write.
+            selected_unrelated_simplification = re.sub(
+                pattern=r"[0-9]+\.*[0-9]*\. +",
+                repl="",
+                string=selected_unrelated_simplification,
+            )
+            # We also clean the new line and carriage return
+            selected_unrelated_simplification = (
+                selected_unrelated_simplification.replace("\n", " ")
+            )
+            selected_unrelated_simplification = (
+                selected_unrelated_simplification.replace("\r", " ")
+            )
+
+            # We use the ROUGE and BLEU score to evaluate if the content seems related or not (in terms of vocabulary
+            # not meaning).
+            rouge_score = rouge.compute(
+                predictions=[selected_unrelated_simplification], references=[original]
+            )
+            bleu_score = bleu.compute(
+                predictions=[selected_unrelated_simplification], references=[original]
+            )["score"]
+
+            if (
+                rouge_score["rouge1"] < 0.25
+                and rouge_score["rouge2"] < 0.25
+                and rouge_score["rougeL"] < 0.25
+                and bleu_score < 25
+            ):
+                unrelated_pairs.append(
+                    {
+                        "original": original,
+                        "simplification": selected_unrelated_simplification,
+                        "label": 0.0,  # 0 since they are not related thus do not have the same legal meaning
+                    }
+                )
+                valid = True
+                running_idx += 1
+            else:
+                running_idx += 1
+                resampled += 1
+
+    return holdout_identical_dataset, Dataset.from_list(unrelated_pairs)
