@@ -57,6 +57,13 @@ parser.add_argument(
     help="The number of epochs to complete.",
 )
 
+parser.add_argument(
+    "--model_name",
+    type=str,
+    default="bert-base-uncased",
+    help="The model name to use as the starting model checkpoint.",
+)
+
 args = parser.parse_args()
 
 seed = args.seed
@@ -107,7 +114,7 @@ holdout_unrelated_dataset = load_dataset(
     root_dir, data_files=["holdout_unrelated_insurance_text_simplifications.jsonl"]
 )
 
-checkpoint = "bert-base-uncased"
+checkpoint = args.model_name
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 
 
