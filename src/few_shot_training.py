@@ -97,7 +97,7 @@ else:
     )
 
 legal_precision_annotation_dataset = DatasetDict(
-    {"train": train, "dev": dev, "test": test}
+    {"train": train["train"], "dev": dev["train"], "test": test["train"]}
 )
 
 holdout_identical_dataset = load_dataset(
