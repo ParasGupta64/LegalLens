@@ -18,6 +18,8 @@ from tools import (
     bool_parse,
 )
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # or "0,1" for multiple GPUs
+
 log = logging.getLogger("pytorch_lightning")
 log.propagate = False
 log.setLevel(logging.ERROR)
