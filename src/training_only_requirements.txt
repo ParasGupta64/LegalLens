@@ -9,5 +9,8 @@ accelerate
 poutyne
 torchmetrics
 transformers
-
+absl-py
+nltk
+rouge_score
+sacrebleu
 # pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
