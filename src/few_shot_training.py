@@ -13,7 +13,11 @@ from transformers import (
     Trainer,
 )
 
-from metrics.metrics import compute_metrics
+from metrics.metrics import (
+    compute_metrics,
+    eval_compute_metrics_identical,
+    eval_compute_metrics_unrelated,
+)
 from tools import (
     bool_parse,
 )
@@ -110,8 +114,12 @@ def tokenize_function(example):
 tokenized_legal_annotation_dataset = legal_precision_annotation_dataset.map(
     tokenize_function, batched=True
 )
-# tokenize_holdout_identical_dataset = holdout_identical_dataset.map(tokenize_function, batched=True)
-# tokenize_holdout_unrelated_dataset = holdout_unrelated_dataset.map(tokenize_function, batched=True)
+tokenize_holdout_identical_dataset = holdout_identical_dataset.map(
+    tokenize_function, batched=True
+)
+tokenize_holdout_unrelated_dataset = holdout_unrelated_dataset.map(
+    tokenize_function, batched=True
+)
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
 training_args = TrainingArguments(
@@ -156,14 +164,14 @@ trainer.evaluate(
 )
 
 # We change the computed metrics for the holdout splits
-# trainer.compute_metrics = eval_compute_metrics_identical
-# trainer.evaluate(
-#     eval_dataset=tokenize_holdout_identical_dataset["test"],
-#     metric_key_prefix="test/identical_sentences",
-# )
+trainer.compute_metrics = eval_compute_metrics_identical
+trainer.evaluate(
+    eval_dataset=tokenize_holdout_identical_dataset["train"],
+    metric_key_prefix="test/identical_sentences",
+)
 
-# trainer.compute_metrics = eval_compute_metrics_unrelated
-# trainer.evaluate(
-#     eval_dataset=tokenize_holdout_unrelated_dataset["test"],
-#     metric_key_prefix="test/unrelated_sentences",
-# )
+trainer.compute_metrics = eval_compute_metrics_unrelated
+trainer.evaluate(
+    eval_dataset=tokenize_holdout_unrelated_dataset["train"],
+    metric_key_prefix="test/unrelated_sentences",
+)
