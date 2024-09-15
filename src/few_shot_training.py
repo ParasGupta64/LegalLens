@@ -159,5 +159,3 @@ trainer.evaluate(
 #     eval_dataset=tokenize_holdout_unrelated_dataset["test"],
 #     metric_key_prefix="test/unrelated_sentences",
 # )
-
-trainer.save_model(f"legal_meaningbert_best_model_{seed}")
