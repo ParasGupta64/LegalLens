@@ -1,3 +1,4 @@
+import json
 import os
 
 import pandas as pd
@@ -7,7 +8,7 @@ from prodigy_iaa.measures import calculate_agreement
 # We use load_dataset from HG datasets library since it handle well JSONL
 annotated_data = load_dataset(
     os.path.join("datastore", "annotated"),
-    data_files=["insurance_text_simplifications_50_annotated.jsonl"],
+    data_files=["insurance_text_simplifications_annotated.jsonl"],
 )
 
 # Each annotation per annotator is a separated row
@@ -108,14 +109,22 @@ for task in tasks:
         columns=["sentence_id", "Annotator A", "Annotator B", "Annotator C"],
     )
 
-    agreement = calculate_agreement(df_to_reliability(task_df))
+    # Since it will consider the sentence id as an evaluator
+    agreement_df = task_df.drop("sentence_id", axis=1)
+
+    agreement = calculate_agreement(df_to_reliability(agreement_df))
     print(agreement)
+    with open(os.path.join("results", f"{task}_agreement.csv"), "w") as f:
+        json.dump(agreement, f)
+
     dataframes.append((task, task_df, agreement))
 
 for task, data, iaa in dataframes:
     data.replace("\n", "", regex=True, inplace=True)
     data.to_csv(
-        os.path.join("results", f"insurance_text_simplifications_50_annotated_{task}.tsv"), index=False, sep="\t"
+        os.path.join("results", f"insurance_text_simplifications_annotated_{task}.tsv"),
+        index=False,
+        sep="\t",
     )
     data.columns = ["sentence_id"] + [
         f"{column}-{task}" for column in data.columns if column != "sentence_id"
@@ -128,5 +137,5 @@ merge_df = pd.merge(left=merge_df, right=dataframes[1][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[2][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[3][1])
 
-path = os.path.join("results", "insurance_text_simplifications_50_annotated.tsv")
+path = os.path.join("results", "insurance_text_simplifications_annotated.tsv")
 merge_df.to_csv(path, index=False)

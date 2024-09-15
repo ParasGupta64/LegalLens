@@ -129,7 +129,8 @@ def compute_stats(row, key):
 root = ".."
 
 insurance_text_simplification = load_dataset(
-    os.path.join(root, "datastore"), data_files=["insurance_text_simplifications.jsonl"]
+    os.path.join(root, "datastore", "unannotated"),
+    data_files=["insurance_text_snippets.jsonl"],
 )
 
 vocabulary_cardinality = set()
@@ -161,6 +162,17 @@ print(
     f"The lexical richness is {round(len(vocabulary_cardinality) / len(all_words), 2)}"
 )
 print(f"The FK is {mean(fk_grades)}")
+print(max(fk_grades))
+print(
+    text_statistic.flesch_reading_ease(
+        "La ville et la province de l’adresse écrite à cet article 1 constituent les lieux d’usage principal, de remisage et de stationnement du véhicule désigné. Si ce n’est pas le cas, le preneur ou l’assuré désigné doit le déclarer."
+    )
+)
+print(
+    text_statistic.flesch_reading_ease(
+        "L’assuré désigné doit assumer la franchise relative à la protection applicable. Par contre, si les dommages sont occasionnés par la foudre ou l’incendie, la franchise ne s’applique pas."
+    )
+)
 
 # Simplified text
 vocabulary_cardinality = set()
