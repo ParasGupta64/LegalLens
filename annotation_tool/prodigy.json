@@ -2,6 +2,7 @@
   "buttons": [
     "accept"
   ],
+  "port": 8080,
   "host": "*",
   "feed_overlap": true,
   "batch_size": 10,
