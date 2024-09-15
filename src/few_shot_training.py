@@ -56,8 +56,8 @@ set_seeds(seed=seed)
 
 # if data_augmentation:
 legal_precision_annotation_dataset = load_dataset(
-    os.path.join("..", "datastore", "annotated"),
-    data_files=["insurance_text_simplifications_annotated.jsonl"],
+    os.path.join("..", "datastore", "training"),
+    data_files=["insurance_text_simplifications.jsonl"],
 )
 
 # 60-10-30 train-test ratio
