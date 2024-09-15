@@ -56,7 +56,7 @@ set_seeds(seed=seed)
 
 # if data_augmentation:
 legal_precision_annotation_dataset = load_dataset(
-    os.path.join("datastore", "annotated"),
+    os.path.join("..", "datastore", "annotated"),
     data_files=["insurance_text_simplifications_annotated.jsonl"],
 )
 
