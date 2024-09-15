@@ -24,7 +24,7 @@ log = logging.getLogger("pytorch_lightning")
 log.propagate = False
 log.setLevel(logging.ERROR)
 
-num_epoch = 5
+num_epoch = 100
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
