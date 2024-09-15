@@ -62,7 +62,7 @@ legal_precision_annotation_dataset = load_dataset(
 
 # 60-10-30 train-test ratio
 # 30% for test
-trainvalid_test = legal_precision_annotation_dataset.train_test_split(
+trainvalid_test = legal_precision_annotation_dataset["train"].train_test_split(
     test_size=0.3, shuffle=True, seed=seed
 )  # 70 is the 60-10 set for train/dev.
 # Split the train in 60-10
