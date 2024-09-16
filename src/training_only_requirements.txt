@@ -13,4 +13,7 @@ absl-py
 nltk
 rouge_score
 sacrebleu
+tf-keras
+tensorflow==2.16.1
+torch>=1.6.0,<2
 # pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
