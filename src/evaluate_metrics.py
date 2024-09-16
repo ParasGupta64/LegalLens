@@ -48,7 +48,7 @@ bertscore = load("bertscore")
 questeval = QuestEval(
     task="text2text",
     language="en",
-    no_cuda=False,
+    device="cuda:0",
     do_weighter=False,
     list_scores=["bertscore", "answerability"],
     qg_batch_size=36,
@@ -81,7 +81,11 @@ rouge = load("rouge")
 
 
 def compute_other_metrics_performance(
-    test_set, holdout_identical_set, holdout_unrelated_set, logger, device: str = "cuda:0"
+    test_set,
+    holdout_identical_set,
+    holdout_unrelated_set,
+    logger,
+    device: str = "cuda:0",
 ):
     compute_other_metrics_on_test_set(test_set=test_set, logger=logger, device=device)
     compute_other_metrics_on_holdout_identical_set(
@@ -117,7 +121,9 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
     ratings = []
 
     # Processing of all scores on the dataset
-    for eval_data in tqdm(test_set, desc="Doing test evaluation on best selected metrics:"):
+    for eval_data in tqdm(
+        test_set, desc="Doing test evaluation on best selected metrics:"
+    ):
         original = [eval_data["original"]]
         simplification = [eval_data["simplification"]]
         rating = eval_data["label"]
@@ -127,11 +133,15 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         fkgl_scores.append(textstat.flesch_kincaid_grade(simplification[0]))
 
         # Between 0 and 100: 100 is the best
-        sari_score = sari.compute(sources=original, predictions=simplification, references=[original])["sari"]
+        sari_score = sari.compute(
+            sources=original, predictions=simplification, references=[original]
+        )["sari"]
         sari_scores.append(sari_score)
 
         # Between 0 and 100: 100 is the best
-        bleu_score = bleu.compute(predictions=simplification, references=[original])["score"]
+        bleu_score = bleu.compute(predictions=simplification, references=[original])[
+            "score"
+        ]
         bleu_scores.append(bleu_score)
 
         bleu_sari_am_scores.append(mean([sari_score, bleu_score]))
@@ -141,26 +151,45 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             bleu_sari_gm_scores.append(0)
 
         # Between 0 and 100: 100 is the best
-        bleurt_scores.append(bleurt.compute(predictions=simplification, references=original)["scores"][0] * 100)
+        bleurt_scores.append(
+            bleurt.compute(predictions=simplification, references=original)["scores"][0]
+            * 100
+        )
 
-        ibleu_scores.append(ibleu.compute(source=original, prediction=simplification, reference=original))
+        ibleu_scores.append(
+            ibleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
-        fkbleu_scores.append(fkbleu.compute(source=original, prediction=simplification, reference=original))
+        fkbleu_scores.append(
+            fkbleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
         # Between 0 and 100: 100 is the best
-        meteor_scores.append(meteor.compute(predictions=simplification, references=original)["meteor"] * 100)
+        meteor_scores.append(
+            meteor.compute(predictions=simplification, references=original)["meteor"]
+            * 100
+        )
 
         # Default model is the best
         # We use the precision, recall and F1
         # Between 0 and 100: 100 is the best
-        bertscore_score = bertscore.compute(predictions=simplification, references=original, lang="en", device=device)
+        bertscore_score = bertscore.compute(
+            predictions=simplification, references=original, lang="en", device=device
+        )
         bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
         # Between 0 and 100: 100 is the best
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)["ex_level_scores"][0] * 100
+            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                "ex_level_scores"
+            ][0]
+            * 100
         )
 
         # Between 0 and 100: 100 is the best
@@ -175,15 +204,26 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         )
 
         # Between 0 and 100: 100 is the best
-        coverage_scores.append(coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0] * 100)
-
-        # Between o and 100: 100 is the best
-        sentence_transformer_scores.append(
-            sentence_transformer.compute(prediction=simplification[0], reference=original[0]).detach().cpu().item()
+        coverage_scores.append(
+            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
         )
 
-        ter_scores.append(100 - ter.compute(predictions=simplification, references=[original])["score"])
+        # Between o and 100: 100 is the best
+        sentence_transformer_scores.append(
+            sentence_transformer.compute(
+                prediction=simplification[0], reference=original[0]
+            )
+            .detach()
+            .cpu()
+            .item()
+            * 100
+        )
+
+        ter_scores.append(
+            100
+            - ter.compute(predictions=simplification, references=[original])["score"]
+        )
 
         rouge_score = rouge.compute(predictions=simplification, references=original)
         rouge_1_scores.append(rouge_score["rouge1"] * 100)
@@ -237,7 +277,9 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             rouge_l_scores,
         ],
     ):
-        pearson_corr = pearsonr_metric.compute(predictions=metric_score, references=ratings, return_pvalue=True)
+        pearson_corr = pearsonr_metric.compute(
+            predictions=metric_score, references=ratings, return_pvalue=True
+        )
         logger.log({f"test/{metric_name}_pearson_corr": pearson_corr["pearsonr"]})
         logger.log({f"test/{metric_name}_pearson_pvalue": pearson_corr["p-value"]})
 
@@ -251,7 +293,9 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         logger.log({f"test/{metric_name}_st_dev": stdev(metric_score)})
 
 
-def compute_other_metrics_on_holdout_identical_set(holdout_identical_set, logger, device: str = "cuda:0"):
+def compute_other_metrics_on_holdout_identical_set(
+    holdout_identical_set, logger, device: str = "cuda:0"
+):
     sari_scores = []
     bleu_scores = []
     bleu_sari_am_scores = []
@@ -283,11 +327,15 @@ def compute_other_metrics_on_holdout_identical_set(holdout_identical_set, logger
         rating = eval_data["label"]
         ratings.append(rating)
         # between 0 and 100: 100 is the best
-        sari_score = sari.compute(sources=original, predictions=simplification, references=[original])["sari"]
+        sari_score = sari.compute(
+            sources=original, predictions=simplification, references=[original]
+        )["sari"]
         sari_scores.append(sari_score)
 
         # between 0 and 100: 100 is the best
-        bleu_score = bleu.compute(predictions=simplification, references=[original])["score"]
+        bleu_score = bleu.compute(predictions=simplification, references=[original])[
+            "score"
+        ]
         bleu_scores.append(bleu_score)
 
         bleu_sari_am_scores.append(mean([sari_score, bleu_score]))
@@ -297,26 +345,45 @@ def compute_other_metrics_on_holdout_identical_set(holdout_identical_set, logger
             bleu_sari_gm_scores.append(0)
 
         # between 0 and 100: 100 is the best
-        bleurt_scores.append(bleurt.compute(predictions=simplification, references=original)["scores"][0] * 100)
+        bleurt_scores.append(
+            bleurt.compute(predictions=simplification, references=original)["scores"][0]
+            * 100
+        )
 
-        ibleu_scores.append(ibleu.compute(source=original, prediction=simplification, reference=original))
+        ibleu_scores.append(
+            ibleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
-        fkbleu_scores.append(fkbleu.compute(source=original, prediction=simplification, reference=original))
+        fkbleu_scores.append(
+            fkbleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
         # between 0 and 100: 100 is the best
-        meteor_scores.append(meteor.compute(predictions=simplification, references=original)["meteor"] * 100)
+        meteor_scores.append(
+            meteor.compute(predictions=simplification, references=original)["meteor"]
+            * 100
+        )
 
         # Default model is the best
         # We use the precision, recall and F1
         # between 0 and 100: 100 is the best
-        bertscore_score = bertscore.compute(predictions=simplification, references=original, lang="en", device=device)
+        bertscore_score = bertscore.compute(
+            predictions=simplification, references=original, lang="en", device=device
+        )
         bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
         # between 0 and 100: 100 is the best
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)["ex_level_scores"][0] * 100
+            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                "ex_level_scores"
+            ][0]
+            * 100
         )
 
         # between 0 and 100: 100 is the best
@@ -331,15 +398,26 @@ def compute_other_metrics_on_holdout_identical_set(holdout_identical_set, logger
         )
 
         # between 0 and 100: 100 is the best
-        coverage_scores.append(coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0] * 100)
-
-        # between o and 100: 100 is the best
-        sentence_transformer_scores.append(
-            sentence_transformer.compute(prediction=simplification[0], reference=original[0]).detach().cpu().item()
+        coverage_scores.append(
+            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
         )
 
-        ter_scores.append(100 - ter.compute(predictions=simplification, references=[original])["score"])
+        # between o and 100: 100 is the best
+        sentence_transformer_scores.append(
+            sentence_transformer.compute(
+                prediction=simplification[0], reference=original[0]
+            )
+            .detach()
+            .cpu()
+            .item()
+            * 100
+        )
+
+        ter_scores.append(
+            100
+            - ter.compute(predictions=simplification, references=[original])["score"]
+        )
 
         rouge_score = rouge.compute(predictions=simplification, references=original)
         rouge_1_scores.append(rouge_score["rouge1"] * 100)
@@ -409,7 +487,9 @@ def compute_other_metrics_on_holdout_identical_set(holdout_identical_set, logger
         logger.log({f"test/same_sentence_{metric_name}_st_dev": stdev(metric_score)})
 
 
-def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger, device: str = "cuda:0"):
+def compute_other_metrics_on_holdout_unrelated_set(
+    holdout_unrelated_set, logger, device: str = "cuda:0"
+):
     sari_scores = []
     bleu_scores = []
     bleu_sari_am_scores = []
@@ -442,11 +522,15 @@ def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger
         ratings.append(rating)
 
         # between 0 and 100: 100 is the best
-        sari_score = sari.compute(sources=original, predictions=simplification, references=[original])["sari"]
+        sari_score = sari.compute(
+            sources=original, predictions=simplification, references=[original]
+        )["sari"]
         sari_scores.append(sari_score)
 
         # between 0 and 100: 100 is the best
-        bleu_score = bleu.compute(predictions=simplification, references=[original])["score"]
+        bleu_score = bleu.compute(predictions=simplification, references=[original])[
+            "score"
+        ]
         bleu_scores.append(bleu_score)
 
         bleu_sari_am_scores.append(mean([sari_score, bleu_score]))
@@ -456,26 +540,45 @@ def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger
             bleu_sari_gm_scores.append(0)
 
         # between 0 and 100: 100 is the best
-        bleurt_scores.append(bleurt.compute(predictions=simplification, references=original)["scores"][0] * 100)
+        bleurt_scores.append(
+            bleurt.compute(predictions=simplification, references=original)["scores"][0]
+            * 100
+        )
 
-        ibleu_scores.append(ibleu.compute(source=original, prediction=simplification, reference=original))
+        ibleu_scores.append(
+            ibleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
-        fkbleu_scores.append(fkbleu.compute(source=original, prediction=simplification, reference=original))
+        fkbleu_scores.append(
+            fkbleu.compute(
+                source=original, prediction=simplification, reference=original
+            )
+        )
 
         # between 0 and 100: 100 is the best
-        meteor_scores.append(meteor.compute(predictions=simplification, references=original)["meteor"] * 100)
+        meteor_scores.append(
+            meteor.compute(predictions=simplification, references=original)["meteor"]
+            * 100
+        )
 
         # Default model is the best
         # We use the precision, recall and F1
         # between 0 and 100: 100 is the best
-        bertscore_score = bertscore.compute(predictions=simplification, references=original, lang="en", device=device)
+        bertscore_score = bertscore.compute(
+            predictions=simplification, references=original, lang="en", device=device
+        )
         bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
         # between 0 and 100: 100 is the best
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)["ex_level_scores"][0] * 100
+            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                "ex_level_scores"
+            ][0]
+            * 100
         )
 
         # between 0 and 100: 100 is the best
@@ -490,15 +593,26 @@ def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger
         )
 
         # between 0 and 100: 100 is the best
-        coverage_scores.append(coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0] * 100)
-
-        # between o and 100: 100 is the best
-        sentence_transformer_scores.append(
-            sentence_transformer.compute(prediction=simplification[0], reference=original[0]).detach().cpu().item()
+        coverage_scores.append(
+            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
         )
 
-        ter_scores.append(100 - ter.compute(predictions=simplification, references=[original])["score"])
+        # between o and 100: 100 is the best
+        sentence_transformer_scores.append(
+            sentence_transformer.compute(
+                prediction=simplification[0], reference=original[0]
+            )
+            .detach()
+            .cpu()
+            .item()
+            * 100
+        )
+
+        ter_scores.append(
+            100
+            - ter.compute(predictions=simplification, references=[original])["score"]
+        )
 
         rouge_score = rouge.compute(predictions=simplification, references=original)
         rouge_1_scores.append(rouge_score["rouge1"] * 100)
@@ -557,7 +671,9 @@ def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger
         counts_equals = [round(s) == 0 for s in metric_score]
         ratio_equals = sum(counts_equals) / len(counts_equals) * 100
 
-        logger.log({f"test/irrelevant_sentence_{metric_name}_ratio_equals": ratio_equals})
+        logger.log(
+            {f"test/irrelevant_sentence_{metric_name}_ratio_equals": ratio_equals}
+        )
         logger.log({f"test/irrelevant_sentence_{metric_name}_ratio_1": ratio_1})
         logger.log({f"test/irrelevant_sentence_{metric_name}_ratio_5": ratio_5})
 
@@ -565,4 +681,6 @@ def compute_other_metrics_on_holdout_unrelated_set(holdout_unrelated_set, logger
         logger.log({f"test/irrelevant_sentence{metric_name}_rmse": rmse_score})
 
         logger.log({f"test/irrelevant_sentence{metric_name}_mean": mean(metric_score)})
-        logger.log({f"test/irrelevant_sentence{metric_name}_st_dev": stdev(metric_score)})
+        logger.log(
+            {f"test/irrelevant_sentence{metric_name}_st_dev": stdev(metric_score)}
+        )

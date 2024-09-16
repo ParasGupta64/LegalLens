@@ -19,6 +19,7 @@ torch>=1.6.0,<2
 absl-py
 nltk
 sacrebleu
+tf-keras
 # Install a modified version of the LENS codebase by fixing PyPi broken build
 # with sentence-transformers (torch version), sentencepiece and Pandas.
 git+https://github.com/davebulaval/LENS
