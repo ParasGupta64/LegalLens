@@ -63,6 +63,8 @@ dataset = concatenate_datasets(
     ]
 )
 
+train_set, dev_set, test_set = create_splits(dataset, seed=seed)
+
 train_set.to_json(
     os.path.join(
         root_dir_training,
