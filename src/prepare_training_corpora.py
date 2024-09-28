@@ -95,9 +95,11 @@ holdout_identical_dataset.to_json(
     os.path.join(
         root_dir_training, "holdout_identical_insurance_text_simplifications.jsonl"
     ),
+    force_ascii=False,
 )
 holdout_unrelated_dataset.to_json(
     os.path.join(
         root_dir_training, "holdout_unrelated_insurance_text_simplifications.jsonl"
     ),
+    force_ascii=False,
 )
