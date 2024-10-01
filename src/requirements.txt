@@ -9,6 +9,7 @@ scipy
 poutyne
 scikit-learn
 accelerate
+transformers==4.40.0 # 4.41.0 breaks QuestEval T5 model that has no BOS and EOS tokens
 # Install a modified version of the LENS codebase by fixing PyPi broken build
 # with sentence-transformers (torch version), sentencepiece and Pandas.
 git+https://github.com/davebulaval/LENS

@@ -1,6 +1,7 @@
 import argparse
 import os
 import urllib
+import warnings
 from statistics import mean, stdev
 from zipfile import ZipFile
 
@@ -22,6 +23,8 @@ from metrics.model_salience import CoverageModel
 from tools import (
     bool_parse,
 )
+
+warnings.filterwarnings("ignore")
 
 nltk.download("stopwords")
 
