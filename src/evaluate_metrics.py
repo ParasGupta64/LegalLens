@@ -394,13 +394,14 @@ parser.add_argument(
     help="The model name to use as the starting model checkpoint.",
 )
 
-wandb.init()
 
 args = parser.parse_args()
 
 seed = args.seed
 root = args.root
 data_augmentation = args.data_augmentation
+
+wandb.init(project="huggingface", name=f"evaluate_other_metrics_seed-{seed}")
 
 set_seeds(seed=seed)
 root_dir = os.path.join("..", "datastore", "training")
