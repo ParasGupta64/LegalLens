@@ -96,7 +96,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
 
     # Processing of all scores on the dataset
     for eval_data in tqdm(
-        test_set, desc="Doing test evaluation on best selected metrics:"
+        test_set, desc="Doing test evaluation on best selected metrics"
     ):
         original = [eval_data["original"]]
         simplification = [eval_data["simplification"]]
@@ -187,7 +187,7 @@ def compute_other_metrics_on_holdout_identical_set(
     # Processing of all scores on the dataset
     for eval_data in tqdm(
         holdout_identical_set,
-        desc="Doing holdout evaluation on identical on best selected metrics:",
+        desc="Doing holdout evaluation on identical on best selected metrics",
     ):
         original = [eval_data["original"]]
         simplification = [eval_data["simplification"]]
@@ -281,7 +281,7 @@ def compute_other_metrics_on_holdout_unrelated_set(
     # Processing of all scores on the dataset
     for eval_data in tqdm(
         holdout_unrelated_set,
-        desc="Doing holdout evaluation on unrelated best selected metrics:",
+        desc="Doing holdout evaluation on unrelated best selected metrics",
     ):
         original = [eval_data["original"]]
         simplification = [eval_data["simplification"]]
@@ -393,6 +393,8 @@ parser.add_argument(
     default="bert-base-uncased",
     help="The model name to use as the starting model checkpoint.",
 )
+
+wandb.init()
 
 args = parser.parse_args()
 
