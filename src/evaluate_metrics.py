@@ -4,6 +4,7 @@ import urllib
 from statistics import mean, geometric_mean, stdev
 from zipfile import ZipFile
 
+import nltk
 import torch
 from evaluate import load
 from lens import LENS
@@ -18,6 +19,8 @@ from metrics.implemented_metrics import (
     FKBLEU,
 )
 from metrics.model_salience import CoverageModel
+
+nltk.download("stopwords")
 
 # To handle LENS deterministic pattern fixed
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
