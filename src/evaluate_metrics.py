@@ -35,9 +35,6 @@ torch.multiprocessing.set_sharing_strategy("file_system")
 r2_metric = load("r_squared")
 pearsonr_metric = load("pearsonr")
 
-# We use the largest, and supposedly better BLEURT model
-bleurt = load("bleurt", module_type="metric", checkpoint="bleurt-large-512")
-
 bertscore = load("bertscore")
 
 questeval = QuestEval(
@@ -86,7 +83,6 @@ def compute_other_metrics_performance(
 
 
 def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
-    bleurt_scores = []
     bertscore_precision_scores = []
     bertscore_recall_scores = []
     bertscore_f1_scores = []
@@ -103,12 +99,6 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         simplification = [eval_data["simplification"]]
         rating = eval_data["label"]
         ratings.append(rating)
-
-        # between 0 and 100: 100 is the best
-        bleurt_scores.append(
-            bleurt.compute(predictions=simplification, references=original)["scores"][0]
-            * 100
-        )
 
         # Default model is the best
         # We use the precision, recall and F1
@@ -148,7 +138,6 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
-            "BLEURT",
             "BERTScore precision",
             "BERTScore recall",
             "BERTScore F1",
@@ -157,7 +146,6 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             "Coverage",
         ],
         [
-            bleurt_scores,
             bertscore_precision_scores,
             bertscore_recall_scores,
             bertscore_f1_scores,
@@ -185,7 +173,6 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
 def compute_other_metrics_on_holdout_identical_set(
     holdout_identical_set, logger, device: str = "cuda:0"
 ):
-    bleurt_scores = []
     bertscore_precision_scores = []
     bertscore_recall_scores = []
     bertscore_f1_scores = []
@@ -203,12 +190,6 @@ def compute_other_metrics_on_holdout_identical_set(
         simplification = [eval_data["simplification"]]
         rating = eval_data["label"]
         ratings.append(rating)
-
-        # between 0 and 100: 100 is the best
-        bleurt_scores.append(
-            bleurt.compute(predictions=simplification, references=original)["scores"][0]
-            * 100
-        )
 
         # Default model is the best
         # We use the precision, recall and F1
@@ -248,7 +229,6 @@ def compute_other_metrics_on_holdout_identical_set(
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
-            "BLEURT",
             "BERTScore precision",
             "BERTScore recall",
             "BERTScore F1",
@@ -257,7 +237,6 @@ def compute_other_metrics_on_holdout_identical_set(
             "Coverage",
         ],
         [
-            bleurt_scores,
             bertscore_precision_scores,
             bertscore_recall_scores,
             bertscore_f1_scores,
@@ -287,7 +266,6 @@ def compute_other_metrics_on_holdout_identical_set(
 def compute_other_metrics_on_holdout_unrelated_set(
     holdout_unrelated_set, logger, device: str = "cuda:0"
 ):
-    bleurt_scores = []
     bertscore_precision_scores = []
     bertscore_recall_scores = []
     bertscore_f1_scores = []
@@ -306,12 +284,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
         simplification = [eval_data["simplification"]]
         rating = eval_data["label"]
         ratings.append(rating)
-
-        # between 0 and 100: 100 is the best
-        bleurt_scores.append(
-            bleurt.compute(predictions=simplification, references=original)["scores"][0]
-            * 100
-        )
 
         # Default model is the best
         # We use the precision, recall and F1
@@ -351,7 +323,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
-            "BLEURT",
             "BERTScore precision",
             "BERTScore recall",
             "BERTScore F1",
@@ -360,7 +331,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
             "Coverage",
         ],
         [
-            bleurt_scores,
             bertscore_precision_scores,
             bertscore_recall_scores,
             bertscore_f1_scores,
