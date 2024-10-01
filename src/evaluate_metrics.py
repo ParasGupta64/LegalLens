@@ -1,4 +1,5 @@
-import os.path
+import argparse
+import os
 import statistics
 import urllib
 from statistics import mean, geometric_mean, stdev
@@ -6,12 +7,18 @@ from zipfile import ZipFile
 
 import nltk
 import torch
+import wandb
+from datasets import load_dataset, DatasetDict
 from evaluate import load
 from lens import LENS
+from poutyne import set_seeds
 from questeval.questeval_metric import QuestEval
 from sklearn.metrics import mean_squared_error
 from textstat import textstat
 from tqdm import tqdm
+from transformers import (
+    AutoTokenizer,
+)
 
 from metrics.implemented_metrics import (
     SentenceBertWrapper,
@@ -19,6 +26,9 @@ from metrics.implemented_metrics import (
     FKBLEU,
 )
 from metrics.model_salience import CoverageModel
+from tools import (
+    bool_parse,
+)
 
 nltk.download("stopwords")
 
@@ -687,3 +697,109 @@ def compute_other_metrics_on_holdout_unrelated_set(
         logger.log(
             {f"test/irrelevant_sentence{metric_name}_st_dev": stdev(metric_score)}
         )
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--seed",
+    type=int,
+    default=42,
+    help="The seed to use for training.",
+)
+
+parser.add_argument(
+    "--root",
+    type=str,
+    default=".",
+    help="Root directory.",
+)
+
+parser.add_argument(
+    "--data_augmentation",
+    type=bool_parse,
+    default=False,
+    help="Either or not to do data augmentation.",
+)
+
+parser.add_argument(
+    "--model_name",
+    type=str,
+    default="bert-base-uncased",
+    help="The model name to use as the starting model checkpoint.",
+)
+
+args = parser.parse_args()
+
+seed = args.seed
+root = args.root
+data_augmentation = args.data_augmentation
+
+set_seeds(seed=seed)
+root_dir = os.path.join("..", "datastore", "training")
+
+if data_augmentation:
+    train = load_dataset(
+        root_dir,
+        data_files=[
+            "train_insurance_text_simplifications_with_data_augmentation.jsonl"
+        ],
+    )
+    dev = load_dataset(
+        root_dir,
+        data_files=["dev_insurance_text_simplifications_with_data_augmentation.jsonl"],
+    )
+    test = load_dataset(
+        root_dir,
+        data_files=["test_insurance_text_simplifications_with_data_augmentation.jsonl"],
+    )
+else:
+    train = load_dataset(
+        root_dir,
+        data_files=["train_insurance_text_simplifications.jsonl"],
+    )
+    dev = load_dataset(
+        root_dir,
+        data_files=["dev_insurance_text_simplifications.jsonl"],
+    )
+    test = load_dataset(
+        root_dir,
+        data_files=["test_insurance_text_simplifications.jsonl"],
+    )
+
+checkpoint = args.model_name
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+
+def tokenize_function(example):
+    return tokenizer(
+        example["original"], example["simplification"], truncation=True, padding=True
+    )
+
+
+legal_precision_annotation_dataset = DatasetDict(
+    {"train": train["train"], "dev": dev["train"], "test": test["train"]}
+)
+
+holdout_identical_dataset = load_dataset(
+    root_dir, data_files=["holdout_identical_insurance_text_simplifications.jsonl"]
+)
+holdout_unrelated_dataset = load_dataset(
+    root_dir, data_files=["holdout_unrelated_insurance_text_simplifications.jsonl"]
+)
+
+tokenized_legal_annotation_dataset = legal_precision_annotation_dataset.map(
+    tokenize_function, batched=True
+)
+tokenize_holdout_identical_dataset = holdout_identical_dataset.map(
+    tokenize_function, batched=True
+)
+tokenize_holdout_unrelated_dataset = holdout_unrelated_dataset.map(
+    tokenize_function, batched=True
+)
+
+compute_other_metrics_performance(
+    tokenized_legal_annotation_dataset["test"],
+    tokenize_holdout_identical_dataset["train"],
+    tokenize_holdout_unrelated_dataset["train"],
+    wandb,
+)
