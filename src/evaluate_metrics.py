@@ -1,8 +1,7 @@
 import argparse
 import os
-import statistics
 import urllib
-from statistics import mean, geometric_mean, stdev
+from statistics import mean, stdev
 from zipfile import ZipFile
 
 import nltk
@@ -14,7 +13,6 @@ from lens import LENS
 from poutyne import set_seeds
 from questeval.questeval_metric import QuestEval
 from sklearn.metrics import mean_squared_error
-from textstat import textstat
 from tqdm import tqdm
 from transformers import (
     AutoTokenizer,
