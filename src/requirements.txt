@@ -1,26 +1,14 @@
 # In a Python 3.11 environment
-sentence-transformers
-evaluate
-datasets
-textstat
-tqdm
-sacremoses
-rake_nltk
-rouge_score
-statistics
-scipy
+nltk
+# pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 wandb
+datasets
+evaluate
+torchmetrics
+scipy
+poutyne
 scikit-learn
 accelerate
-python2latex
-poutyne
-torchmetrics
-torch>=1.6.0,<2
-absl-py
-nltk
-sacrebleu
-tf-keras
-tensorflow==2.16.1
 # Install a modified version of the LENS codebase by fixing PyPi broken build
 # with sentence-transformers (torch version), sentencepiece and Pandas.
 git+https://github.com/davebulaval/LENS
@@ -28,9 +16,3 @@ git+https://github.com/davebulaval/LENS
 # Install a modified version of the QuestEval codebase by fixing PyPi broken build
 # with SpaCy.
 git+https://github.com/davebulaval/QuestEval
-
-# Install BLEURT
-git+https://github.com/google-research/bleurt
-
-# pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
-
