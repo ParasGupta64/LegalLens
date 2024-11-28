@@ -48,6 +48,8 @@ def convert_name_to_unique_id(annotator):
         unique_id = 3
     elif "Yanis" in annotator:
         unique_id = 4
+    elif "Clara" in annotator:
+        unique_id = 5
     else:
         raise Exception("Unknown annotator")
     return unique_id
@@ -114,6 +116,7 @@ for task in tasks:
             "Annotator B",
             "Annotator C",
             "Annotator D",
+            "Annotator E",
         ],
     )
 
