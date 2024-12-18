@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 
 import wandb
 from datasets import load_dataset, DatasetDict
@@ -191,3 +192,6 @@ trainer.evaluate(
     eval_dataset=tokenize_holdout_unrelated_dataset["train"],
     metric_key_prefix="test/unrelated_sentences",
 )
+
+# We delete to be sure to have enough space on the device.
+shutil.rmtree(f"legal_meaning_bert_train_{checkpoint}_{seed}")
