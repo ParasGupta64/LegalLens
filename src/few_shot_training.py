@@ -167,7 +167,10 @@ print("----------Training start----------")
 trainer.train()
 
 wandb.run.config.update(
-    {"data_augmentation": f"{str(data_augmentation)} {num_epoch} holdout fixed"}
+    {
+        "data_augmentation": f"{str(data_augmentation)} {num_epoch} holdout fixed",
+        "tag": f"legal_meaning_bert_train_{checkpoint}",
+    }
 )
 wandb.log({"Best model checkpoint path": trainer.state.best_model_checkpoint})
 
