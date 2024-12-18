@@ -3,7 +3,7 @@
 Here is the command to self-host Prodigy
 
 ```shell
-python -m prodigy legal_meaning legal_annotations ../datastore/insurance_text_simplifications.jsonl -F recipe.py 
+PRODIGY_CONFIG_OVERRIDES='{"total_examples_target": 247}' python -m prodigy legal_meaning legal_annotations ../datastore/insurance_text_simplifications.jsonl -F recipe.py 
 ```
 
 Output the annotation:

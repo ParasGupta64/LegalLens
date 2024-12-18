@@ -46,6 +46,10 @@ def convert_name_to_unique_id(annotator):
         unique_id = 2
     elif "Simon" in annotator:
         unique_id = 3
+    elif "Yanis" in annotator:
+        unique_id = 4
+    elif "Clara" in annotator:
+        unique_id = 5
     else:
         raise Exception("Unknown annotator")
     return unique_id
@@ -94,7 +98,7 @@ for row in annotated_data["train"]:
 
 dataframes = []
 
-tasks = ["difficulty_level", "qualification", "legal_precision", "justifications"]
+tasks = ["difficulty_level", "qualification", "legal_precision"]  # , "justifications"]
 for task in tasks:
     tasks_annotation = []
     for sentence_idx, sentence in extracted_annotations.items():
@@ -106,7 +110,14 @@ for task in tasks:
 
     task_df = pd.DataFrame(
         tasks_annotation,
-        columns=["sentence_id", "Annotator A", "Annotator B", "Annotator C"],
+        columns=[
+            "sentence_id",
+            "Annotator A",
+            "Annotator B",
+            "Annotator C",
+            "Annotator D",
+            "Annotator E",
+        ],
     )
 
     # Since it will consider the sentence id as an evaluator
@@ -135,7 +146,7 @@ original_data = pd.DataFrame(sentence_id_mapping).drop_duplicates()
 merge_df = pd.merge(left=original_data, right=dataframes[0][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[1][1])
 merge_df = pd.merge(left=merge_df, right=dataframes[2][1])
-merge_df = pd.merge(left=merge_df, right=dataframes[3][1])
+# merge_df = pd.merge(left=merge_df, right=dataframes[3][1])
 
 path = os.path.join("results", "insurance_text_simplifications_annotated.tsv")
 merge_df.to_csv(path, index=False)

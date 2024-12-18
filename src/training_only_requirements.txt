@@ -1,0 +1,17 @@
+# In a Python 3.11 environment
+evaluate
+datasets
+tqdm
+scipy
+wandb
+scikit-learn
+accelerate
+poutyne
+torchmetrics
+transformers
+absl-py
+nltk
+rouge_score
+sacrebleu
+tf-keras
+# pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
