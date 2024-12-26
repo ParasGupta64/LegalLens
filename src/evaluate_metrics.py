@@ -219,16 +219,12 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             predictions=metric_score, references=ratings, return_pvalue=True
         )
         logger.log({f"test/{metric_name}_pearson_corr": pearson_corr["pearsonr"]})
-        logger.log({f"test/{metric_name}_pearson_pvalue": pearson_corr["p-value"]})
 
         r_squared = r2_metric.compute(predictions=metric_score, references=ratings)
         logger.log({f"test/{metric_name}_R2": r_squared})
 
         rmse_score = mean_squared_error(metric_score, ratings, squared=False)
         logger.log({f"test/{metric_name}_rmse": rmse_score})
-
-        logger.log({f"test/{metric_name}_mean": mean(metric_score)})
-        logger.log({f"test/{metric_name}_st_dev": stdev(metric_score)})
 
 
 def compute_other_metrics_on_holdout_identical_set(
@@ -358,15 +354,9 @@ def compute_other_metrics_on_holdout_identical_set(
         counts_equals = [round(s) == 100 for s in metric_score]
         ratio_equals = sum(counts_equals) / len(counts_equals) * 100
 
-        logger.log({f"test/same_sentence_{metric_name}_ratio_equals": ratio_equals})
-        logger.log({f"test/same_sentence_{metric_name}_ratio_99": ratio_99})
-        logger.log({f"test/same_sentence_{metric_name}_ratio_95": ratio_95})
-
-        rmse_score = mean_squared_error(metric_score, ratings, squared=False)
-        logger.log({f"test/same_sentence_{metric_name}_rmse": rmse_score})
-
-        logger.log({f"test/same_sentence_{metric_name}_mean": mean(metric_score)})
-        logger.log({f"test/same_sentence_{metric_name}_st_dev": stdev(metric_score)})
+        logger.log({f"test/{metric_name}_ratio_equals": ratio_equals})
+        logger.log({f"test/{metric_name}_ratio_99": ratio_99})
+        logger.log({f"test/{metric_name}_ratio_95": ratio_95})
 
 
 def compute_other_metrics_on_holdout_unrelated_set(
@@ -496,19 +486,9 @@ def compute_other_metrics_on_holdout_unrelated_set(
         counts_equals = [round(s) == 0 for s in metric_score]
         ratio_equals = sum(counts_equals) / len(counts_equals) * 100
 
-        logger.log(
-            {f"test/irrelevant_sentence_{metric_name}_ratio_equals": ratio_equals}
-        )
-        logger.log({f"test/irrelevant_sentence_{metric_name}_ratio_1": ratio_1})
-        logger.log({f"test/irrelevant_sentence_{metric_name}_ratio_5": ratio_5})
-
-        rmse_score = mean_squared_error(metric_score, ratings, squared=False)
-        logger.log({f"test/irrelevant_sentence{metric_name}_rmse": rmse_score})
-
-        logger.log({f"test/irrelevant_sentence{metric_name}_mean": mean(metric_score)})
-        logger.log(
-            {f"test/irrelevant_sentence{metric_name}_st_dev": stdev(metric_score)}
-        )
+        logger.log({f"test/{metric_name}_ratio_equals": ratio_equals})
+        logger.log({f"test/{metric_name}_ratio_1": ratio_1})
+        logger.log({f"test/{metric_name}_ratio_5": ratio_5})
 
 
 parser = argparse.ArgumentParser()
