@@ -1,4 +1,6 @@
 # In a Python 3.11 environment
+tqdm
+sentence-transformers
 nltk
 # pip install torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 wandb
@@ -10,6 +12,7 @@ poutyne
 scikit-learn
 accelerate
 transformers==4.40.0 # 4.41.0 breaks QuestEval T5 model that has no BOS and EOS tokens
+numpy==1.26.4
 # Install a modified version of the LENS codebase by fixing PyPi broken build
 # with sentence-transformers (torch version), sentencepiece and Pandas.
 git+https://github.com/davebulaval/LENS

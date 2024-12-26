@@ -13,6 +13,7 @@ from evaluate import load
 from lens import LENS
 from poutyne import set_seeds
 from questeval.questeval_metric import QuestEval
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 from transformers import (
@@ -67,6 +68,18 @@ if not os.path.exists(coverage_model_ckpt):
 
 coverage_kis = CoverageModel(model_file=coverage_model_ckpt)
 
+meaning_bert = load("davebulaval/meaningbert")
+
+best_sentence_emb = SentenceTransformer(
+    "sentence-t5-xxl"
+)  # Best performance on sentence embeddings
+best_semantic_search = SentenceTransformer(
+    "multi-qa-mpnet-base-dot-v1"
+)  # Best on semantic search
+best_average_perf = SentenceTransformer(
+    "all-mpnet-base-v2"
+)  # Best performance on average on sentence embeddings and semantic search
+
 
 def compute_other_metrics_performance(
     test_set,
@@ -92,6 +105,10 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
     questeval_scores = []
     lens_scores = []
     coverage_scores = []
+    meaningbert_scores = []
+    sentence_emb_scores = []
+    semantic_search_scores = []
+    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -138,6 +155,39 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
+        meaningbert_scores.append(
+            meaning_bert.compute(references=original, predictions=simplification)[
+                "scores"
+            ][0]
+            * 100
+        )
+
+        # Between 0 and 100: 100 is the best
+        sentence_emb_scores.append(
+            best_sentence_emb.similarity(
+                best_sentence_emb.encode(original),
+                best_sentence_emb.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        semantic_search_scores.append(
+            best_semantic_search.similarity(
+                best_semantic_search.encode(original),
+                best_semantic_search.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        average_perf_scores.append(
+            best_average_perf.similarity(
+                best_average_perf.encode(original),
+                best_average_perf.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -147,6 +197,10 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             "QuestEval",
             "LENS",
             "Coverage",
+            "MeaningBERT",
+            "SBERT Embeddings",
+            "SBERT Semantic Search",
+            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -155,6 +209,10 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             questeval_scores,
             lens_scores,
             coverage_scores,
+            meaningbert_scores,
+            sentence_emb_scores,
+            semantic_search_scores,
+            average_perf_scores,
         ],
     ):
         pearson_corr = pearsonr_metric.compute(
@@ -182,6 +240,10 @@ def compute_other_metrics_on_holdout_identical_set(
     questeval_scores = []
     lens_scores = []
     coverage_scores = []
+    meaningbert_scores = []
+    sentence_emb_scores = []
+    semantic_search_scores = []
+    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -229,6 +291,39 @@ def compute_other_metrics_on_holdout_identical_set(
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
+        meaningbert_scores.append(
+            meaning_bert.compute(references=original, predictions=simplification)[
+                "scores"
+            ][0]
+            * 100
+        )
+
+        # Between 0 and 100: 100 is the best
+        sentence_emb_scores.append(
+            best_sentence_emb.similarity(
+                best_sentence_emb.encode(original),
+                best_sentence_emb.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        semantic_search_scores.append(
+            best_semantic_search.similarity(
+                best_semantic_search.encode(original),
+                best_semantic_search.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        average_perf_scores.append(
+            best_average_perf.similarity(
+                best_average_perf.encode(original),
+                best_average_perf.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -238,6 +333,10 @@ def compute_other_metrics_on_holdout_identical_set(
             "QuestEval",
             "LENS",
             "Coverage",
+            "MeaningBERT",
+            "SBERT Embeddings",
+            "SBERT Semantic Search",
+            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -246,6 +345,10 @@ def compute_other_metrics_on_holdout_identical_set(
             questeval_scores,
             lens_scores,
             coverage_scores,
+            meaningbert_scores,
+            sentence_emb_scores,
+            semantic_search_scores,
+            average_perf_scores,
         ],
     ):
         counts_95 = [round(s) > 95 for s in metric_score]
@@ -275,7 +378,10 @@ def compute_other_metrics_on_holdout_unrelated_set(
     questeval_scores = []
     lens_scores = []
     coverage_scores = []
-    sentence_transformer_scores = []
+    meaningbert_scores = []
+    sentence_emb_scores = []
+    semantic_search_scores = []
+    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -323,6 +429,39 @@ def compute_other_metrics_on_holdout_unrelated_set(
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
+        meaningbert_scores.append(
+            meaning_bert.compute(references=original, predictions=simplification)[
+                "scores"
+            ][0]
+            * 100
+        )
+
+        # Between 0 and 100: 100 is the best
+        sentence_emb_scores.append(
+            best_sentence_emb.similarity(
+                best_sentence_emb.encode(original),
+                best_sentence_emb.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        semantic_search_scores.append(
+            best_semantic_search.similarity(
+                best_semantic_search.encode(original),
+                best_semantic_search.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
+        average_perf_scores.append(
+            best_average_perf.similarity(
+                best_average_perf.encode(original),
+                best_average_perf.encode(simplification),
+            ).tolist()[0][0]
+            * 100
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -332,6 +471,10 @@ def compute_other_metrics_on_holdout_unrelated_set(
             "QuestEval",
             "LENS",
             "Coverage",
+            "MeaningBERT",
+            "SBERT Embeddings",
+            "SBERT Semantic Search",
+            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -340,7 +483,10 @@ def compute_other_metrics_on_holdout_unrelated_set(
             questeval_scores,
             lens_scores,
             coverage_scores,
-            sentence_transformer_scores,
+            meaningbert_scores,
+            sentence_emb_scores,
+            semantic_search_scores,
+            average_perf_scores,
         ],
     ):
         counts_1 = [round(s) < 1 for s in metric_score]
@@ -393,7 +539,6 @@ parser.add_argument(
     default="bert-base-uncased",
     help="The model name to use as the starting model checkpoint.",
 )
-
 
 args = parser.parse_args()
 
