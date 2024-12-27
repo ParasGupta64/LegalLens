@@ -2,7 +2,6 @@ import argparse
 import os
 import urllib
 import warnings
-from statistics import mean, stdev
 from zipfile import ZipFile
 
 import nltk
