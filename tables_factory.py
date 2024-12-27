@@ -1,8 +1,4 @@
-import os
-
-import numpy as np
 import pandas as pd
-import plotly.express as px
 import wandb
 from tqdm import tqdm
 
@@ -146,5 +142,11 @@ run_df = pd.DataFrame(
     },
 )
 
+results = run_df.groupby(["With DA", "Model Name"]).mean().round(decimals=2)
 
-results = run_df.groupby(["With DA", "Model Name"]).mean()
+print(
+    results.to_latex(
+        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        float_format="%.2f",
+    )
+)
