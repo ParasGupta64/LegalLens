@@ -146,49 +146,5 @@ run_df = pd.DataFrame(
     },
 )
 
-run_df["color"] = np.where(
-    run_df["model_name"] == "Aléatoire",
-    "red",
-    np.where(run_df["model_name"] == "Annotateurs", "black", "blue"),
-)
 
-fig = px.scatter(
-    run_df,
-    x="model_size",
-    y="accuracy",
-    color=run_df["color"],
-    trendline="ols",
-    trendline_options=dict(log_x=True),
-    log_x=True,
-    hover_name="model_name",
-).update_layout(
-    title=dict(
-        text=f"{lang.upper()} minimal pair log-scaled X axis and log-transformed fit",
-        font=dict(size=24, color="#000000"),
-        y=1,
-        x=0.5,
-        xanchor="center",
-        yanchor="top",
-    ),
-    xaxis_title="Model size",
-    yaxis_title="Accuracy",
-    showlegend=False,
-)
-
-# fig.update_layout(yaxis_range=[25, 90])
-
-fig.add_hline(y=random_accuracy_value, line_width=1, line_dash="dash", line_color="red")
-if lang == "fr":
-    fig.add_hline(
-        y=annotators_accuracy_value,
-        line_width=1,
-        line_dash="dash",
-        line_color="green",
-    )
-
-fig.show(renderer="browser")
-
-run_df.drop(["color"], axis=1, inplace=True)
-
-run_df.to_csv(os.path.join("results", f"result_{lang}.tsv"), index=False, sep="\t")
-fig.write_html(os.path.join("results", f"minimal_pair_analysis_{lang}.html"))
+results = run_df.groupby(["With DA", "Model Name"]).mean()
