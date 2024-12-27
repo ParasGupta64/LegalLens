@@ -549,30 +549,28 @@ root_dir = os.path.join("..", "datastore", "training")
 if data_augmentation:
     train = load_dataset(
         root_dir,
-        data_files=[
-            "train_insurance_text_simplifications_with_data_augmentation.jsonl"
-        ],
+        data_files=["train_FrJUDGE_with_data_augmentation.jsonl"],
     )
     dev = load_dataset(
         root_dir,
-        data_files=["dev_insurance_text_simplifications_with_data_augmentation.jsonl"],
+        data_files=["dev_FrJUDGE_with_data_augmentation.jsonl"],
     )
     test = load_dataset(
         root_dir,
-        data_files=["test_insurance_text_simplifications_with_data_augmentation.jsonl"],
+        data_files=["test_FrJUDGE_with_data_augmentation.jsonl"],
     )
 else:
     train = load_dataset(
         root_dir,
-        data_files=["train_insurance_text_simplifications.jsonl"],
+        data_files=["train_FrJUDGE.jsonl"],
     )
     dev = load_dataset(
         root_dir,
-        data_files=["dev_insurance_text_simplifications.jsonl"],
+        data_files=["dev_FrJUDGE.jsonl"],
     )
     test = load_dataset(
         root_dir,
-        data_files=["test_insurance_text_simplifications.jsonl"],
+        data_files=["test_FrJUDGE.jsonl"],
     )
 
 checkpoint = args.model_name
@@ -590,10 +588,10 @@ legal_precision_annotation_dataset = DatasetDict(
 )
 
 holdout_identical_dataset = load_dataset(
-    root_dir, data_files=["holdout_identical_insurance_text_simplifications.jsonl"]
+    root_dir, data_files=["holdout_identical_FrJUDGE.jsonl"]
 )
 holdout_unrelated_dataset = load_dataset(
-    root_dir, data_files=["holdout_unrelated_insurance_text_simplifications.jsonl"]
+    root_dir, data_files=["holdout_unrelated_FrJUDGE.jsonl"]
 )
 
 tokenized_legal_annotation_dataset = legal_precision_annotation_dataset.map(

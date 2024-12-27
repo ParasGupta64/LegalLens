@@ -92,14 +92,10 @@ holdout_identical_dataset, holdout_unrelated_dataset = create_holdout_dataset(
 )
 
 holdout_identical_dataset.to_json(
-    os.path.join(
-        root_dir_training, "holdout_identical_FrJUDGE.jsonl"
-    ),
+    os.path.join(root_dir_training, "holdout_identical_FrJUDGE.jsonl"),
     force_ascii=False,
 )
 holdout_unrelated_dataset.to_json(
-    os.path.join(
-        root_dir_training, "holdout_unrelated_FrJUDGE.jsonl"
-    ),
+    os.path.join(root_dir_training, "holdout_unrelated_FrJUDGE.jsonl"),
     force_ascii=False,
 )
