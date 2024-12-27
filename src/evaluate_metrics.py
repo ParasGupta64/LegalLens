@@ -160,7 +160,6 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             meaning_bert.compute(references=original, predictions=simplification)[
                 "scores"
             ][0]
-            * 100
         )
 
         # Between 0 and 100: 100 is the best
@@ -224,7 +223,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         logger.log({f"test/{metric_name}_R2": r_squared})
 
         rmse_score = mean_squared_error(metric_score, ratings, squared=False)
-        logger.log({f"test/{metric_name}_rmse": rmse_score})
+        logger.log({f"test/{metric_name}_RMSE": rmse_score})
 
 
 def compute_other_metrics_on_holdout_identical_set(
@@ -292,7 +291,6 @@ def compute_other_metrics_on_holdout_identical_set(
             meaning_bert.compute(references=original, predictions=simplification)[
                 "scores"
             ][0]
-            * 100
         )
 
         # Between 0 and 100: 100 is the best
@@ -424,7 +422,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
             meaning_bert.compute(references=original, predictions=simplification)[
                 "scores"
             ][0]
-            * 100
         )
 
         # Between 0 and 100: 100 is the best
