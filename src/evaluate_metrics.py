@@ -122,7 +122,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
 
         # Default model is the best
         # We use the precision, recall and F1
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
@@ -130,7 +131,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         questeval_scores.append(
             questeval.corpus_questeval(sources=original, hypothesis=simplification)[
                 "ex_level_scores"
@@ -149,7 +151,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             )[0]
         )
 
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         coverage_scores.append(
             coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
@@ -162,7 +165,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             ][0]
         )
 
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         sentence_emb_scores.append(
             best_sentence_emb.similarity(
                 best_sentence_emb.encode(original),
@@ -171,14 +175,16 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
         semantic_search_scores.append(
             best_semantic_search.similarity(
                 best_semantic_search.encode(original),
                 best_semantic_search.encode(simplification),
             ).tolist()[0][0]
-            * 100
         )
 
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         average_perf_scores.append(
             best_average_perf.similarity(
                 best_average_perf.encode(original),
@@ -253,7 +259,8 @@ def compute_other_metrics_on_holdout_identical_set(
 
         # Default model is the best
         # We use the precision, recall and F1
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
@@ -261,7 +268,8 @@ def compute_other_metrics_on_holdout_identical_set(
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         questeval_scores.append(
             questeval.corpus_questeval(sources=original, hypothesis=simplification)[
                 "ex_level_scores"
@@ -269,7 +277,7 @@ def compute_other_metrics_on_holdout_identical_set(
             * 100
         )
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 100: 100 is the best
         lens_scores.append(
             lens.score(
                 complex=original,
@@ -280,7 +288,8 @@ def compute_other_metrics_on_holdout_identical_set(
             )[0]
         )
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         coverage_scores.append(
             coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
@@ -293,7 +302,8 @@ def compute_other_metrics_on_holdout_identical_set(
             ][0]
         )
 
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         sentence_emb_scores.append(
             best_sentence_emb.similarity(
                 best_sentence_emb.encode(original),
@@ -302,14 +312,16 @@ def compute_other_metrics_on_holdout_identical_set(
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
         semantic_search_scores.append(
             best_semantic_search.similarity(
                 best_semantic_search.encode(original),
                 best_semantic_search.encode(simplification),
             ).tolist()[0][0]
-            * 100
         )
 
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         average_perf_scores.append(
             best_average_perf.similarity(
                 best_average_perf.encode(original),
@@ -384,7 +396,8 @@ def compute_other_metrics_on_holdout_unrelated_set(
 
         # Default model is the best
         # We use the precision, recall and F1
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
@@ -392,7 +405,8 @@ def compute_other_metrics_on_holdout_unrelated_set(
         bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
         bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         questeval_scores.append(
             questeval.corpus_questeval(sources=original, hypothesis=simplification)[
                 "ex_level_scores"
@@ -400,7 +414,7 @@ def compute_other_metrics_on_holdout_unrelated_set(
             * 100
         )
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 100: 100 is the best
         lens_scores.append(
             lens.score(
                 complex=original,
@@ -411,7 +425,8 @@ def compute_other_metrics_on_holdout_unrelated_set(
             )[0]
         )
 
-        # between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         coverage_scores.append(
             coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
             * 100
@@ -424,7 +439,8 @@ def compute_other_metrics_on_holdout_unrelated_set(
             ][0]
         )
 
-        # Between 0 and 100: 100 is the best
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         sentence_emb_scores.append(
             best_sentence_emb.similarity(
                 best_sentence_emb.encode(original),
@@ -433,14 +449,16 @@ def compute_other_metrics_on_holdout_unrelated_set(
             * 100
         )
 
+        # Between 0 and 100: 100 is the best
         semantic_search_scores.append(
             best_semantic_search.similarity(
                 best_semantic_search.encode(original),
                 best_semantic_search.encode(simplification),
             ).tolist()[0][0]
-            * 100
         )
 
+        # Between 0 and 1: 1 is the best
+        # We multiply by 100 to get a 0-100 scores
         average_perf_scores.append(
             best_average_perf.similarity(
                 best_average_perf.encode(original),
