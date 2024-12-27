@@ -25,7 +25,7 @@ dataset = clean_columns_type(dataset)
 
 # We create the release dataset with all the columns
 dataset.to_json(
-    os.path.join(root_dir, "released", "insurance_text_simplifications.jsonl"),
+    os.path.join(root_dir, "released", "FrJUDGE.jsonl"),
     force_ascii=False,
 )
 
@@ -36,15 +36,15 @@ root_dir_training = os.path.join(root_dir, "training")
 train_set, dev_set, test_set = create_splits(dataset, seed=seed)
 
 train_set.to_json(
-    os.path.join(root_dir_training, "train_insurance_text_simplifications.jsonl"),
+    os.path.join(root_dir_training, "train_FrJUDGE.jsonl"),
     force_ascii=False,
 )
 dev_set.to_json(
-    os.path.join(root_dir_training, "dev_insurance_text_simplifications.jsonl"),
+    os.path.join(root_dir_training, "dev_FrJUDGE.jsonl"),
     force_ascii=False,
 )
 test_set.to_json(
-    os.path.join(root_dir_training, "test_insurance_text_simplifications.jsonl"),
+    os.path.join(root_dir_training, "test_FrJUDGE.jsonl"),
     force_ascii=False,
 )
 
@@ -68,21 +68,21 @@ train_set, dev_set, test_set = create_splits(dataset, seed=seed)
 train_set.to_json(
     os.path.join(
         root_dir_training,
-        "train_insurance_text_simplifications_with_data_augmentation.jsonl",
+        "train_FrJUDGE_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
 dev_set.to_json(
     os.path.join(
         root_dir_training,
-        "dev_insurance_text_simplifications_with_data_augmentation.jsonl",
+        "dev_FrJUDGE_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
 test_set.to_json(
     os.path.join(
         root_dir_training,
-        "test_insurance_text_simplifications_with_data_augmentation.jsonl",
+        "test_FrJUDGE_with_data_augmentation.jsonl",
     ),
     force_ascii=False,
 )
@@ -93,13 +93,13 @@ holdout_identical_dataset, holdout_unrelated_dataset = create_holdout_dataset(
 
 holdout_identical_dataset.to_json(
     os.path.join(
-        root_dir_training, "holdout_identical_insurance_text_simplifications.jsonl"
+        root_dir_training, "holdout_identical_FrJUDGE.jsonl"
     ),
     force_ascii=False,
 )
 holdout_unrelated_dataset.to_json(
     os.path.join(
-        root_dir_training, "holdout_unrelated_insurance_text_simplifications.jsonl"
+        root_dir_training, "holdout_unrelated_FrJUDGE.jsonl"
     ),
     force_ascii=False,
 )
