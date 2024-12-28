@@ -9,7 +9,7 @@ evaluate
 torchmetrics
 scipy
 poutyne
-scikit-learn
+scikit-learn==1.3.2
 accelerate
 transformers==4.40.0 # 4.41.0 breaks QuestEval T5 model that has no BOS and EOS tokens
 numpy==1.26.4
