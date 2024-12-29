@@ -132,8 +132,9 @@ tokenize_holdout_unrelated_dataset = holdout_unrelated_dataset.map(
 )
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
+output_dir = f"legal_meaning_bert_train_{checkpoint}_WithDA_{data_augmentation}_{seed}"
 training_args = TrainingArguments(
-    output_dir=f"legal_meaning_bert_train_{checkpoint}_WithDA_{data_augmentation}_{seed}",
+    output_dir=output_dir,
     logging_strategy="epoch",
     eval_strategy="epoch",
     per_device_train_batch_size=16,
@@ -189,5 +190,5 @@ trainer.evaluate(
     metric_key_prefix="test/unrelated_sentences",
 )
 
-# We delete to be sure to have enough space on the device.
-shutil.rmtree(f"legal_meaning_bert_train_{checkpoint}_{seed}")
+# We delete to be sure to have enough space on the computer.
+shutil.rmtree(output_dir)
