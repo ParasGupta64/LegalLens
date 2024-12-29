@@ -58,8 +58,8 @@ def convert_name_to_unique_id(annotator):
 sentence_id_mapping = []
 for row in annotated_data["train"]:
     # The level of difficulty amongst the preset class (7 classes)
-    difficulty_level_annotation = difficulty_to_int_class.get(
-        row["difficulty_evaluation"]
+    difficulty_level_annotation = int(
+        difficulty_to_int_class.get(row["difficulty_evaluation"])
     )
 
     # The qualification of the original text (18 classes)
