@@ -5,3 +5,6 @@ accelerate
 numpy
 packaging
 unsloth
+python-dotenv
+openai
+
