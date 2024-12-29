@@ -19,7 +19,7 @@ def compute_metrics(eval_pred):
     mean_score = predictions.mean()
     st_dev_score = predictions.std()
     return {
-        "rmse": rmse,
+        "RMSE": rmse,
         "R2": r_squared,
         "pearson_corr": pearson_corr["pearsonr"],
         "pearson_pvalue": pearson_corr["p-value"],
@@ -53,7 +53,7 @@ def eval_compute_metrics_identical(eval_pred):
     ).item()
 
     return {
-        "rmse": rmse,
+        "RMSE": rmse,
         "mean_score": mean_score,
         "st_dev_score": st_dev_score,
         "ratio_equals": ratio_equals,
@@ -87,7 +87,7 @@ def eval_compute_metrics_unrelated(eval_pred):
     ).item()
 
     return {
-        "rmse": rmse,
+        "RMSE": rmse,
         "mean_score": mean_score,
         "st_dev_score": st_dev_score,
         "ratio_equals": ratio_equals,

@@ -135,7 +135,7 @@ tokenize_holdout_unrelated_dataset = holdout_unrelated_dataset.map(
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
 training_args = TrainingArguments(
-    output_dir=f"legal_meaning_bert_train_{checkpoint}_{seed}",
+    output_dir=f"legal_meaning_bert_train_{checkpoint}-WithDA-{data_augmentation}_{seed}",
     logging_strategy="epoch",
     eval_strategy="epoch",
     per_device_train_batch_size=16,

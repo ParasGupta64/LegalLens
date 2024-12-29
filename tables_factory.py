@@ -60,7 +60,11 @@ for run in tqdm(runs):
             )
 
             batch_rmse.append(
-                [v for k, v in run.summary._json_dict.items() if k == "test/RMSE"][0]
+                [
+                    v
+                    for k, v in run.summary._json_dict.items()
+                    if k.lower() == "test/rmse"
+                ][0]
             )
 
             identical_batch_ratio_95.append(
