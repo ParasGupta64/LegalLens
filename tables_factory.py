@@ -174,3 +174,43 @@ print(
     ),
     file=os.path.join("tables", "results.tex"),
 )
+
+print(
+    results_std.to_latex(
+        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results_std.tex"),
+)
+
+print(
+    results.to_latex(
+        columns=["With DA", "Model Name", "Identical 95", "Identical 99"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results_2.tex"),
+)
+
+print(
+    results_std.to_latex(
+        columns=["With DA", "Model Name", "Identical 95", "Identical 99"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results_2_std.tex"),
+)
+
+print(
+    results.to_latex(
+        columns=["With DA", "Model Name", "Unrelated 5", "Unrelated 1"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results_3.tex"),
+)
+
+print(
+    results_std.to_latex(
+        columns=["With DA", "Model Name", "Unrelated 5", "Unrelated 1"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results_3_std.tex"),
+)
