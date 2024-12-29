@@ -223,6 +223,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             predictions=metric_score, references=ratings, return_pvalue=True
         )
         logger.log({f"test/{metric_name}_pearson_corr": pearson_corr["pearsonr"]})
+        logger.log({f"test/{metric_name}_pearson_pvalue": pearson_corr["p-value"]})
 
         r_squared = r2_metric.compute(predictions=metric_score, references=ratings)
         logger.log({f"test/{metric_name}_R2": r_squared})
