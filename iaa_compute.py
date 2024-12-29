@@ -9,7 +9,6 @@ from src.tools import groupby_legal_precision_annotation
 mpl.use("pgf")
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import pandas as pd
 from datasets import load_dataset
 from prodigy_iaa.measures import calculate_agreement
@@ -188,6 +187,7 @@ for task in tasks:
                 tl.set_backgroundcolor((1.0, 1.0, 0.0, 0.3))
             elif txt == "1":
                 tl.set_backgroundcolor((1.0, 0.0, 0.0, 0.5))
+            tl.set_fontweight("bold")
             tl.set_text(txt)
     plt.ylabel("Instances")
     plt.xticks(rotation=0)
