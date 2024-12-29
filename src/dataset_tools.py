@@ -76,7 +76,7 @@ def create_training_corpus(dataset):
     df = (
         df.groupby(["original", "simplification"])["label"]
         .mean()
-        .round()
+        .round(2)
         .to_frame()
         .reset_index()
     )
