@@ -6,3 +6,4 @@ langchain-community
 langchain-openai
 prodigy-iaa
 plotly
+matplotlib==3.7.1

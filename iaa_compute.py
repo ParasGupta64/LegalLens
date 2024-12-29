@@ -1,6 +1,12 @@
 import json
 import os
 
+import matplotlib as mpl
+
+# Use the pgf backend (must be done before import pyplot interface)
+mpl.use("pgf")
+
+import matplotlib.pyplot as plt
 import pandas as pd
 from datasets import load_dataset
 from prodigy_iaa.measures import calculate_agreement
@@ -10,6 +16,15 @@ annotated_data = load_dataset(
     os.path.join("datastore", "annotated"),
     data_files=["insurance_text_simplifications_annotated.jsonl"],
 )
+
+columns = [
+    "sentence_id",
+    "Annotator A",
+    "Annotator B",
+    "Annotator C",
+    "Annotator D",
+    "Annotator E",
+]
 
 # Each annotation per annotator is a separated row
 # "train" since by default HG set it as train
@@ -110,18 +125,33 @@ for task in tasks:
 
     task_df = pd.DataFrame(
         tasks_annotation,
-        columns=[
-            "sentence_id",
-            "Annotator A",
-            "Annotator B",
-            "Annotator C",
-            "Annotator D",
-            "Annotator E",
-        ],
+        columns=columns,
     )
 
     # Since it will consider the sentence id as an evaluator
     agreement_df = task_df.drop("sentence_id", axis=1)
+
+    counts_df = pd.DataFrame(
+        {col_name: agreement_df.value_counts(col_name) for col_name in columns[1:]}
+    )
+
+    # But with fonts from the document body
+    plt.rcParams.update(
+        {
+            "font.family": "serif",  # use serif/main font for text elements
+            "text.usetex": True,  # use inline math for ticks
+            "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+        }
+    )
+
+    counts_df.plot(kind="bar")
+    plt.show()
+
+    plt.tight_layout()
+    plt.savefig(f"{task}.pgf", format="pgf")
+
+    print(agreement_df.mean().round(2), agreement_df.std().round(2))
+    print(agreement_df.mean().mean().round(2), agreement_df.std().mean().round(2))
 
     agreement = calculate_agreement(df_to_reliability(agreement_df))
     print(agreement)
