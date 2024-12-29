@@ -1,3 +1,5 @@
+import os.path
+
 import pandas as pd
 import wandb
 from tqdm import tqdm
@@ -147,10 +149,28 @@ run_df = pd.DataFrame(
 )
 
 results = run_df.groupby(["With DA", "Model Name"]).mean().round(decimals=2)
+results_std = run_df.groupby(["With DA", "Model Name"]).std().round(decimals=2)
+print(results.groupby(["With DA"]).mean().round(decimals=2))
+print(results.groupby(["With DA"]).std().round(decimals=2))
 
 print(
     results.to_latex(
         columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
         float_format="%.2f",
     )
+)
+
+print(
+    results_std.to_latex(
+        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        float_format="%.2f",
+    )
+)
+
+print(
+    results.to_latex(
+        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        float_format="%.2f",
+    ),
+    file=os.path.join("tables", "results.tex"),
 )

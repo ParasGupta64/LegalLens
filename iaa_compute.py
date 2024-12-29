@@ -3,10 +3,13 @@ import os
 
 import matplotlib as mpl
 
+from src.tools import groupby_legal_precision_annotation
+
 # Use the pgf backend (must be done before import pyplot interface)
 mpl.use("pgf")
 
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import pandas as pd
 from datasets import load_dataset
 from prodigy_iaa.measures import calculate_agreement
@@ -71,6 +74,8 @@ def convert_name_to_unique_id(annotator):
 
 
 sentence_id_mapping = []
+
+
 for row in annotated_data["train"]:
     # The level of difficulty amongst the preset class (7 classes)
     difficulty_level_annotation = int(
@@ -82,6 +87,9 @@ for row in annotated_data["train"]:
 
     # The legal evaluation level between 1 and 10
     legal_precision_annotation = int(row["evaluation"])
+    legal_precision_annotation_group = groupby_legal_precision_annotation(
+        legal_precision_annotation
+    )
 
     justifications_annotation = row["justifications"]
 
@@ -93,6 +101,7 @@ for row in annotated_data["train"]:
         "qualification_annotation": qualification_annotation,
         "legal_precision_annotation": legal_precision_annotation,
         "justifications_annotation": justifications_annotation,
+        "legal_precision_group_annotation": legal_precision_annotation_group,
     }
 
     annotation_hash = row["_input_hash"]
@@ -113,7 +122,12 @@ for row in annotated_data["train"]:
 
 dataframes = []
 
-tasks = ["difficulty_level", "qualification", "legal_precision"]  # , "justifications"]
+tasks = [
+    "difficulty_level",
+    "qualification",
+    "legal_precision",
+    "legal_precision_group",
+]  # , "justifications"]
 for task in tasks:
     tasks_annotation = []
     for sentence_idx, sentence in extracted_annotations.items():
@@ -144,11 +158,43 @@ for task in tasks:
         }
     )
 
-    counts_df.plot(kind="bar")
-    plt.show()
+    ax = counts_df.plot(kind="bar")
+    if task == "difficulty_level":
+        plt.xticks(
+            [0, 1, 2, 3],
+            ["Easier to read", "Equal to read", "More difficult", "No Simplification"],
+        )
+    elif task == "legal_precision":
+        # modify labels to add background color
+        for tl in ax.get_xticklabels():
+            txt = tl.get_text()
+            if txt == "10":
+                tl.set_backgroundcolor((0.13, 0.55, 0.13, 0.9))
+            elif txt == "9":
+                tl.set_backgroundcolor((0.13, 0.55, 0.13, 0.8))
+            elif txt == "8":
+                tl.set_backgroundcolor((0.13, 0.55, 0.13, 0.7))
+            elif txt == "7":
+                tl.set_backgroundcolor((0.13, 0.55, 0.13, 0.6))
+            elif txt == "6":
+                tl.set_backgroundcolor((0.13, 0.55, 0.13, 0.5))
+            elif txt == "5":
+                tl.set_backgroundcolor((1.0, 1.0, 0.0, 0.6))
+            elif txt == "4":
+                tl.set_backgroundcolor((1.0, 1.0, 0.0, 0.5))
+            elif txt == "3":
+                tl.set_backgroundcolor((1.0, 1.0, 0.0, 0.4))
+            elif txt == "2":
+                tl.set_backgroundcolor((1.0, 1.0, 0.0, 0.3))
+            elif txt == "1":
+                tl.set_backgroundcolor((1.0, 0.0, 0.0, 0.5))
+            tl.set_text(txt)
+    plt.ylabel("Instances")
+    plt.xticks(rotation=0)
+    # plt.show()
 
     plt.tight_layout()
-    plt.savefig(f"{task}.pgf", format="pgf")
+    plt.savefig(os.path.join("tables", f"{task}.pgf"), format="pgf")
 
     print(agreement_df.mean().round(2), agreement_df.std().round(2))
     print(agreement_df.mean().mean().round(2), agreement_df.std().mean().round(2))
