@@ -5,6 +5,7 @@ import os
 from functools import partial
 
 import numpy
+import numpy as np
 import torch
 import wandb
 from datasets import load_dataset, DatasetDict
@@ -181,7 +182,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = process_dataset["train"]["prediction"]
+        prediction = np.ndarray(process_dataset["train"]["prediction"])
         labels = legal_precision_annotation_dataset["train"]["label"]
         payload = {
             f"test/{k}": v for k, v in compute_metrics((prediction, labels)).items()
@@ -192,7 +193,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = process_dataset["train"]["prediction"]
+        prediction = np.ndarray(process_dataset["train"]["prediction"])
         labels = holdout_identical_dataset["train"]["label"]
         payload.update(
             {
@@ -206,7 +207,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = process_dataset["train"]["prediction"]
+        prediction = np.ndarray(process_dataset["train"]["prediction"])
         labels = holdout_unrelated_dataset["train"]["label"]
         payload.update(
             {
