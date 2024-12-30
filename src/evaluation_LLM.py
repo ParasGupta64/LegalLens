@@ -183,7 +183,9 @@ for data_augmentation in [False, True]:
         )
         prediction = process_dataset["train"]["prediction"]
         labels = legal_precision_annotation_dataset["train"]["label"]
-        payload = {f"test/{k}": v for k, v in compute_metrics(zip(prediction, labels))}
+        payload = {
+            f"test/{k}": v for k, v in compute_metrics(zip(prediction, labels)).items()
+        }
 
         process_dataset = holdout_identical_dataset.map(
             evaluation_fn,
@@ -195,7 +197,9 @@ for data_augmentation in [False, True]:
         payload.update(
             {
                 f"test/{k}": v
-                for k, v in eval_compute_metrics_identical(zip(prediction, labels))
+                for k, v in eval_compute_metrics_identical(
+                    zip(prediction, labels)
+                ).items()
             }
         )
 
@@ -209,7 +213,9 @@ for data_augmentation in [False, True]:
         payload.update(
             {
                 f"test/{k}": v
-                for k, v in eval_compute_metrics_unrelated(zip(prediction, labels))
+                for k, v in eval_compute_metrics_unrelated(
+                    zip(prediction, labels)
+                ).items()
             }
         )
 
