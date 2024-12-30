@@ -13,7 +13,7 @@ from transformers import logging, pipeline
 
 from factory import model_tokenizer_factory
 from memory_cleanup import cleanup_memory
-from src.metrics.metrics import (
+from metrics.metrics import (
     compute_metrics,
     eval_compute_metrics_identical,
     eval_compute_metrics_unrelated,
