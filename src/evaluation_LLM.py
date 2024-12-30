@@ -182,7 +182,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = np.ndarray(process_dataset["train"]["prediction"])
+        prediction = np.array(process_dataset["train"]["prediction"])
         labels = legal_precision_annotation_dataset["train"]["label"]
         payload = {
             f"test/{k}": v for k, v in compute_metrics((prediction, labels)).items()
@@ -193,7 +193,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = np.ndarray(process_dataset["train"]["prediction"])
+        prediction = np.array(process_dataset["train"]["prediction"])
         labels = holdout_identical_dataset["train"]["label"]
         payload.update(
             {
@@ -207,7 +207,7 @@ for data_augmentation in [False, True]:
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = np.ndarray(process_dataset["train"]["prediction"])
+        prediction = np.array(process_dataset["train"]["prediction"])
         labels = holdout_unrelated_dataset["train"]["label"]
         payload.update(
             {
