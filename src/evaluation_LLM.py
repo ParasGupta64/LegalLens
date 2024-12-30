@@ -111,7 +111,6 @@ def evaluation_llm_prompting(rows, tokenizer, model):
             output["labels"][numpy.array(output["scores"]).argmax()]
             for output in outputs
         ]
-        print(predictions)
 
         return {"prediction": predictions}
 
@@ -183,7 +182,7 @@ for data_augmentation in [False, True]:
             **map_params,
         )
         prediction = process_dataset["train"]["prediction"]
-        labels = legal_precision_annotation_dataset["train"]["labels"]
+        labels = legal_precision_annotation_dataset["train"]["label"]
         payload = {f"test/{k}": v for k, v in compute_metrics(zip(prediction, labels))}
 
         process_dataset = holdout_identical_dataset.map(
@@ -192,7 +191,7 @@ for data_augmentation in [False, True]:
             **map_params,
         )
         prediction = process_dataset["train"]["prediction"]
-        labels = holdout_identical_dataset["train"]["labels"]
+        labels = holdout_identical_dataset["train"]["label"]
         payload.update(
             {
                 f"test/{k}": v
@@ -206,7 +205,7 @@ for data_augmentation in [False, True]:
             **map_params,
         )
         prediction = process_dataset["train"]["prediction"]
-        labels = holdout_unrelated_dataset["train"]["labels"]
+        labels = holdout_unrelated_dataset["train"]["label"]
         payload.update(
             {
                 f"test/{k}": v
