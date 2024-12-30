@@ -108,7 +108,7 @@ def evaluation_llm_prompting(rows, tokenizer, model):
         )
 
         predictions = [
-            output["labels"][numpy.array(output["scores"]).argmax()]
+            int(output["labels"][numpy.array(output["scores"]).argmax()])
             for output in outputs
         ]
 
