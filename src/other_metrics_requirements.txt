@@ -19,3 +19,4 @@ git+https://github.com/davebulaval/LENS
 
 # Install a modified version of the QuestEval codebase by fixing PyPi broken build
 # with SpaCy.
+git+https://github.com/davebulaval/QuestEval
