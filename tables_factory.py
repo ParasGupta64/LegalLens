@@ -31,6 +31,7 @@ batch_with_da, batch_model_name = [], []
 batch_r2, batch_pearson_corr, batch_rmse = [], [], []
 identical_batch_ratio_95, identical_batch_ratio_99 = [], []
 unrelated_batch_ratio_5, unrelated_batch_ratio_1 = [], []
+batch_pearson_corr_p_value = []
 for run in tqdm(runs):
     if run.state == "finished":
         with_da = run.metadata.get("args")[1].split("=")[-1]
@@ -58,6 +59,14 @@ for run in tqdm(runs):
                     v
                     for k, v in run.summary._json_dict.items()
                     if k == "test/pearson_corr"
+                ][0]
+            )
+
+            batch_pearson_corr_p_value.append(
+                [
+                    v
+                    for k, v in run.summary._json_dict.items()
+                    if k == "test/pearson_pvalue"
                 ][0]
             )
 
@@ -114,6 +123,10 @@ for run in tqdm(runs):
                 value = run.summary._json_dict.get(key_to_extract, None)
                 batch_pearson_corr.append(value)
 
+                key_to_extract = f"test/{metric}_pearson_pvalue"
+                value = run.summary._json_dict.get(key_to_extract, None)
+                batch_pearson_corr_p_value.append(value)
+
                 key_to_extract = f"test/{metric}_RMSE"
                 value = run.summary._json_dict.get(key_to_extract, None)
                 batch_rmse.append(value)
@@ -140,6 +153,7 @@ run_df = pd.DataFrame(
         "Model Name": batch_model_name,
         "R2": batch_r2,
         "Pearson Corr": batch_pearson_corr,
+        "P-value": batch_pearson_corr_p_value,
         "RMSE": batch_rmse,
         "Identical 95": identical_batch_ratio_95,
         "Identical 99": identical_batch_ratio_99,
@@ -155,62 +169,37 @@ print(results.groupby(["With DA"]).std().round(decimals=2))
 
 print(
     results.to_latex(
-        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        columns=[
+            "With DA",
+            "Model Name",
+            "R2",
+            "Pearson Corr",
+            "P-value",
+            "RMSE",
+            "Identical 99",
+            "Unrelated 1",
+        ],
         float_format="%.2f",
     )
 )
 
 print(
     results_std.to_latex(
-        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        columns=["With DA", "Model Name", "R2", "Pearson Corr", "P-value", "RMSE"],
         float_format="%.2f",
     )
 )
 
 print(
     results.to_latex(
-        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
+        columns=[
+            "With DA",
+            "Model Name",
+            "Identical 95",
+            "Identical 99",
+            "Unrelated 5",
+            "Unrelated 1",
+        ],
         float_format="%.2f",
     ),
-    file=os.path.join("tables", "results.tex"),
-)
-
-print(
-    results_std.to_latex(
-        columns=["With DA", "Model Name", "R2", "Pearson Corr", "RMSE"],
-        float_format="%.2f",
-    ),
-    file=os.path.join("tables", "results_std.tex"),
-)
-
-print(
-    results.to_latex(
-        columns=["With DA", "Model Name", "Identical 95", "Identical 99"],
-        float_format="%.2f",
-    ),
-    file=os.path.join("tables", "results_2.tex"),
-)
-
-print(
-    results_std.to_latex(
-        columns=["With DA", "Model Name", "Identical 95", "Identical 99"],
-        float_format="%.2f",
-    ),
-    file=os.path.join("tables", "results_2_std.tex"),
-)
-
-print(
-    results.to_latex(
-        columns=["With DA", "Model Name", "Unrelated 5", "Unrelated 1"],
-        float_format="%.2f",
-    ),
-    file=os.path.join("tables", "results_3.tex"),
-)
-
-print(
-    results_std.to_latex(
-        columns=["With DA", "Model Name", "Unrelated 5", "Unrelated 1"],
-        float_format="%.2f",
-    ),
-    file=os.path.join("tables", "results_3_std.tex"),
 )

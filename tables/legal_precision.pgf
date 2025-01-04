@@ -1790,10 +1790,10 @@
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
 \pgfpathmoveto{\pgfqpoint{0.731667in}{3.570834in}}%
-\pgfpathlineto{\pgfqpoint{1.957917in}{3.570834in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.985695in}{3.570834in}}{\pgfqpoint{1.985695in}{3.598612in}}%
-\pgfpathlineto{\pgfqpoint{1.985695in}{4.552778in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.985695in}{4.580556in}}{\pgfqpoint{1.957917in}{4.580556in}}%
+\pgfpathlineto{\pgfqpoint{2.737192in}{3.570834in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.764970in}{3.570834in}}{\pgfqpoint{2.764970in}{3.598612in}}%
+\pgfpathlineto{\pgfqpoint{2.764970in}{4.552778in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.764970in}{4.580556in}}{\pgfqpoint{2.737192in}{4.580556in}}%
 \pgfpathlineto{\pgfqpoint{0.731667in}{4.580556in}}%
 \pgfpathquadraticcurveto{\pgfqpoint{0.703889in}{4.580556in}}{\pgfqpoint{0.703889in}{4.552778in}}%
 \pgfpathlineto{\pgfqpoint{0.703889in}{3.598612in}}%
@@ -1824,7 +1824,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.148334in,y=4.427778in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator A}%
+\pgftext[x=1.148334in,y=4.427778in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator A: 7.55 \(\displaystyle \pm\) 3.06}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -1848,7 +1848,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.148334in,y=4.234167in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator B}%
+\pgftext[x=1.148334in,y=4.234167in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator B: 7.35 \(\displaystyle \pm\) 3.1}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -1872,7 +1872,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.148334in,y=4.040556in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator C}%
+\pgftext[x=1.148334in,y=4.040556in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator C: 7.94 \(\displaystyle \pm\) 2.96}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -1896,7 +1896,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.148334in,y=3.846945in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator D}%
+\pgftext[x=1.148334in,y=3.846945in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator D: 4.36 \(\displaystyle \pm\) 3.25}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -1920,7 +1920,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.148334in,y=3.653334in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator E}%
+\pgftext[x=1.148334in,y=3.653334in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Annotator E: 4.33 \(\displaystyle \pm\) 3.53}%
 \end{pgfscope}%
 \end{pgfpicture}%
 \makeatother%
