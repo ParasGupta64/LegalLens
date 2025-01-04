@@ -122,10 +122,10 @@ for data_augmentation in [False, True]:
 
         wandb.init(
             project=f"kil_llm_eval",
-            config={"model_name": model_name},
+            config={"model_name": model_name, "data_augmentation": data_augmentation},
+            name=f"evaluate_LLM_with_DA-{data_augmentation}",
         )
         clean_model_name = model_name.split("/")[-1]
-        wandb.run.name = f"{clean_model_name}"
 
         model, tokenizer = model_tokenizer_factory(
             model_name=model_name,
@@ -185,7 +185,8 @@ for data_augmentation in [False, True]:
         prediction = np.array(process_dataset["train"]["prediction"])
         labels = legal_precision_annotation_dataset["train"]["label"]
         payload = {
-            f"test/{k}": v for k, v in compute_metrics((prediction, labels)).items()
+            f"test/{clean_model_name}_{k}": v
+            for k, v in compute_metrics((prediction, labels)).items()
         }
 
         process_dataset = holdout_identical_dataset.map(
@@ -197,7 +198,7 @@ for data_augmentation in [False, True]:
         labels = holdout_identical_dataset["train"]["label"]
         payload.update(
             {
-                f"test/{k}": v
+                f"test/{clean_model_name}_{k}": v
                 for k, v in eval_compute_metrics_identical((prediction, labels)).items()
             }
         )
@@ -211,12 +212,12 @@ for data_augmentation in [False, True]:
         labels = holdout_unrelated_dataset["train"]["label"]
         payload.update(
             {
-                f"test/{k}": v
+                f"test/{clean_model_name}_{k}": v
                 for k, v in eval_compute_metrics_unrelated((prediction, labels)).items()
             }
         )
 
-        wandb.log({model_name: {**payload}})
+        wandb.log({**payload})
 
         # We close the run since we will start a new one in the for loop for the next model.
         wandb.finish(exit_code=0)
