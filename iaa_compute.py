@@ -74,7 +74,6 @@ def convert_name_to_unique_id(annotator):
 
 sentence_id_mapping = []
 
-
 for row in annotated_data["train"]:
     # The level of difficulty amongst the preset class (7 classes)
     difficulty_level_annotation = int(
@@ -191,6 +190,22 @@ for task in tasks:
             tl.set_text(txt)
     plt.ylabel("Instances")
     plt.xticks(rotation=0)
+
+    if task == "legal_precision":
+        legend = plt.legend()
+        for idx, (annotator_mean, annotator_std) in enumerate(
+            zip(agreement_df.mean().round(2), agreement_df.std().round(2))
+        ):
+            original_text = legend.get_texts()[idx]
+
+            legend.get_texts()[idx].set_text(
+                original_text.get_text()
+                + ": "
+                + str(annotator_mean)
+                + r" $\pm$ "
+                + str(annotator_std)
+            )
+
     # plt.show()
 
     plt.tight_layout()
