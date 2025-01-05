@@ -72,7 +72,7 @@ prompt_en = (
 )
 
 prompt_fr = (
-    "Vous agirez en tant que conseiller juridique pour les profanes du Québec. Votre tâche consiste à classer si un "
+    "Vous agirez en tant que conseiller juridique au Québec. Votre tâche consiste à classer si un "
     "tuple de phrases d'une phrase juridique complexe qui a été simplifiée transmet le même sens juridique. Le sens "
     "juridique mesure à quel point le texte de sortie couvre les détails et les exceptions juridiques et ne déforme "
     "pas la loi. Un score compris entre 6 et 10 signifie que la simplification semble inclure correctement les détails "
@@ -108,10 +108,8 @@ def evaluation_llm_prompting(rows, tokenizer, model):
             batch_size=len(originals),
         )
 
-        predictions = [
-            int(output["labels"][numpy.array(output["scores"]).argmax()])
-            for output in outputs
-        ]
+        # Labels are sorted in likelihood order.
+        predictions = [int(output["labels"][0]) for output in outputs]
 
         return {"prediction": predictions}
 
@@ -176,14 +174,14 @@ for data_augmentation in [False, True]:
         holdout_unrelated_dataset = load_dataset(
             root_dir, data_files=["holdout_unrelated_FrJUDGE.jsonl"]
         )
-
-        process_dataset = legal_precision_annotation_dataset.map(
+        process_dataset = legal_precision_annotation_dataset["test"].map(
             evaluation_fn,
             desc=f"----Doing model {model_name}-----",
             **map_params,
         )
-        prediction = np.array(process_dataset["train"]["prediction"])
-        labels = legal_precision_annotation_dataset["train"]["label"]
+
+        prediction = np.array(process_dataset["prediction"])
+        labels = legal_precision_annotation_dataset["test"]["label"]
         payload = {
             f"test/{clean_model_name}_{k}": v
             for k, v in compute_metrics((prediction, labels)).items()
