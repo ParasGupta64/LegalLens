@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import pickle
 import shutil
 
 import wandb
@@ -176,6 +177,12 @@ print("----------Test Set Evaluation start----------")
 trainer.evaluate(
     eval_dataset=tokenized_legal_annotation_dataset["test"], metric_key_prefix="test"
 )
+predictions = trainer.predict(test_dataset=tokenized_legal_annotation_dataset["test"])
+
+with open(
+    os.path.join("predictions", f"JUDGEBERT_{seed}_predictions.pickle"), "wb"
+) as file:
+    pickle.dump(predictions, file)
 
 # We change the computed metrics for the holdout splits
 trainer.compute_metrics = eval_compute_metrics_identical
