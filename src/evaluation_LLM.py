@@ -4,14 +4,13 @@
 import os
 from functools import partial
 
-import numpy
 import numpy as np
 import torch
-import wandb
 from datasets import load_dataset, DatasetDict
 from dotenv import dotenv_values
 from transformers import logging, pipeline
 
+import wandb
 from factory import model_tokenizer_factory
 from memory_cleanup import cleanup_memory
 from metrics.metrics import (
