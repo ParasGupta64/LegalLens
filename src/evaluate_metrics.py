@@ -70,15 +70,7 @@ coverage_kis = CoverageModel(model_file=coverage_model_ckpt)
 
 meaning_bert = load("davebulaval/meaningbert")
 
-best_sentence_emb = SentenceTransformer(
-    "sentence-t5-xxl"
-)  # Best performance on sentence embeddings
-best_semantic_search = SentenceTransformer(
-    "multi-qa-mpnet-base-dot-v1"
-)  # Best on semantic search
-best_average_perf = SentenceTransformer(
-    "all-mpnet-base-v2"
-)  # Best performance on average on sentence embeddings and semantic search
+best_sentence_emb = SentenceTransformer("sentence-t5-xxl")
 
 
 def compute_other_metrics_performance(
@@ -112,8 +104,6 @@ def compute_other_metrics_on_test_set(
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
-    semantic_search_scores = []
-    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -180,24 +170,6 @@ def compute_other_metrics_on_test_set(
             * 100
         )
 
-        # Between 0 and 100: 100 is the best
-        semantic_search_scores.append(
-            best_semantic_search.similarity(
-                best_semantic_search.encode(original),
-                best_semantic_search.encode(simplification),
-            ).tolist()[0][0]
-        )
-
-        # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
-        average_perf_scores.append(
-            best_average_perf.similarity(
-                best_average_perf.encode(original),
-                best_average_perf.encode(simplification),
-            ).tolist()[0][0]
-            * 100
-        )
-
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -209,8 +181,6 @@ def compute_other_metrics_on_test_set(
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
-            "SBERT Semantic Search",
-            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -221,8 +191,6 @@ def compute_other_metrics_on_test_set(
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
-            semantic_search_scores,
-            average_perf_scores,
         ],
     ):
         pearson_corr = pearsonr_metric.compute(
@@ -252,8 +220,6 @@ def compute_other_metrics_on_holdout_identical_set(
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
-    semantic_search_scores = []
-    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -321,24 +287,6 @@ def compute_other_metrics_on_holdout_identical_set(
             * 100
         )
 
-        # Between 0 and 100: 100 is the best
-        semantic_search_scores.append(
-            best_semantic_search.similarity(
-                best_semantic_search.encode(original),
-                best_semantic_search.encode(simplification),
-            ).tolist()[0][0]
-        )
-
-        # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
-        average_perf_scores.append(
-            best_average_perf.similarity(
-                best_average_perf.encode(original),
-                best_average_perf.encode(simplification),
-            ).tolist()[0][0]
-            * 100
-        )
-
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -350,8 +298,6 @@ def compute_other_metrics_on_holdout_identical_set(
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
-            "SBERT Semantic Search",
-            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -362,8 +308,6 @@ def compute_other_metrics_on_holdout_identical_set(
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
-            semantic_search_scores,
-            average_perf_scores,
         ],
     ):
         counts_95 = [round(s) > 95 for s in metric_score]
@@ -389,8 +333,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
-    semantic_search_scores = []
-    average_perf_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -458,24 +400,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
             * 100
         )
 
-        # Between 0 and 100: 100 is the best
-        semantic_search_scores.append(
-            best_semantic_search.similarity(
-                best_semantic_search.encode(original),
-                best_semantic_search.encode(simplification),
-            ).tolist()[0][0]
-        )
-
-        # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
-        average_perf_scores.append(
-            best_average_perf.similarity(
-                best_average_perf.encode(original),
-                best_average_perf.encode(simplification),
-            ).tolist()[0][0]
-            * 100
-        )
-
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -487,8 +411,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
-            "SBERT Semantic Search",
-            "SBERT Average Perf",
         ],
         [
             bertscore_precision_scores,
@@ -499,8 +421,6 @@ def compute_other_metrics_on_holdout_unrelated_set(
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
-            semantic_search_scores,
-            average_perf_scores,
         ],
     ):
         counts_1 = [round(s) < 1 for s in metric_score]
