@@ -222,8 +222,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         file_path = f"{metric_name.replace(' ', '_')}"
         if data_augmentation:
             file_path += "_WithDA"
-        file_path += "_ratings.pickle"
-        with open(file_path, "wb") as file:
+        file_path += "_predictions.pickle"
+        with open(os.path.join("predictions", file_path), "wb") as file:
             pickle.dump(metric_score, file)
 
 
