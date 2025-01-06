@@ -70,7 +70,7 @@ coverage_kis = CoverageModel(model_file=coverage_model_ckpt)
 
 meaning_bert = load("davebulaval/meaningbert")
 
-best_sentence_emb = SentenceTransformer("sentence-t5-xxl")
+best_sentence_emb = SentenceTransformer("sentence-t5-xxl", device="cuda:0")
 
 
 def compute_other_metrics_performance(
@@ -79,11 +79,8 @@ def compute_other_metrics_performance(
     holdout_unrelated_set,
     logger,
     device: str = "cuda:0",
-    file_path: str = "ratings.pickle",
 ):
-    compute_other_metrics_on_test_set(
-        test_set=test_set, logger=logger, device=device, file_path=file_path
-    )
+    compute_other_metrics_on_test_set(test_set=test_set, logger=logger, device=device)
     compute_other_metrics_on_holdout_identical_set(
         holdout_identical_set=holdout_identical_set, logger=logger, device=device
     )
@@ -93,9 +90,7 @@ def compute_other_metrics_performance(
     )
 
 
-def compute_other_metrics_on_test_set(
-    test_set, logger, device: str = "cuda:0", file_path: str = "ratings.pickle"
-):
+def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
     bertscore_precision_scores = []
     bertscore_recall_scores = []
     bertscore_f1_scores = []
@@ -205,8 +200,8 @@ def compute_other_metrics_on_test_set(
         rmse_score = mean_squared_error(metric_score, ratings, squared=False)
         logger.log({f"test/{metric_name}_RMSE": rmse_score})
 
-    with open(file_path, "wb") as file:
-        pickle.dump(ratings, file)
+        with open(f"{metric_name.replace(' ', '_')}_ratings.pickle", "wb") as file:
+            pickle.dump(metric_score, file)
 
 
 def compute_other_metrics_on_holdout_identical_set(
