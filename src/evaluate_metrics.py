@@ -74,11 +74,11 @@ best_sentence_emb = SentenceTransformer("sentence-t5-xxl", device="cuda:0")
 
 
 def multiply(x):
-    return x * 10
+    return round(x * 10, 1)
 
 
 def divide(x):
-    return x / 10
+    return round(x / 10, 1)
 
 
 def compute_other_metrics_performance(
