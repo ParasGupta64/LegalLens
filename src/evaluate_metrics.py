@@ -73,6 +73,14 @@ meaning_bert = load("davebulaval/meaningbert")
 best_sentence_emb = SentenceTransformer("sentence-t5-xxl", device="cuda:0")
 
 
+def multiply(x):
+    return x * 10
+
+
+def divide(x):
+    return x / 10
+
+
 def compute_other_metrics_performance(
     test_set,
     holdout_identical_set,
@@ -113,56 +121,67 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         # Default model is the best
         # We use the precision, recall and F1
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
-        bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
-        bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
-        bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
+        bertscore_precision_scores.append(multiply(bertscore_score["precision"][0]))
+        bertscore_recall_scores.append(multiply(bertscore_score["recall"][0]))
+        bertscore_f1_scores.append(multiply(bertscore_score["f1"][0]))
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
-                "ex_level_scores"
-            ][0]
-            * 100
+            multiply(
+                questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                    "ex_level_scores"
+                ][0]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         lens_scores.append(
-            lens.score(
-                complex=original,
-                simplified=simplification,
-                references=[original],
-                batch_size=1,
-                gpus=1,
-            )[0]
+            divide(
+                lens.score(
+                    complex=original,
+                    simplified=simplification,
+                    references=[original],
+                    batch_size=1,
+                    gpus=1,
+                )[0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         coverage_scores.append(
-            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
-            * 100
+            multiply(
+                coverage_kis.score(bodies=original, decodeds=simplification)["scores"][
+                    0
+                ]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         meaningbert_scores.append(
-            meaning_bert.compute(references=original, predictions=simplification)[
-                "scores"
-            ][0]
+            divide(
+                meaning_bert.compute(references=original, predictions=simplification)[
+                    "scores"
+                ][0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         sentence_emb_scores.append(
-            best_sentence_emb.similarity(
-                best_sentence_emb.encode(original),
-                best_sentence_emb.encode(simplification),
-            ).tolist()[0][0]
-            * 100
+            multiply(
+                best_sentence_emb.similarity(
+                    best_sentence_emb.encode(original),
+                    best_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
         )
 
     # Compilation of the scores per metrics
@@ -230,56 +249,67 @@ def compute_other_metrics_on_holdout_identical_set(
         # Default model is the best
         # We use the precision, recall and F1
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
-        bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
-        bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
-        bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
+        bertscore_precision_scores.append(multiply(bertscore_score["precision"][0]))
+        bertscore_recall_scores.append(multiply(bertscore_score["recall"][0]))
+        bertscore_f1_scores.append(multiply(bertscore_score["f1"][0]))
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
-                "ex_level_scores"
-            ][0]
-            * 100
+            multiply(
+                questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                    "ex_level_scores"
+                ][0]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         lens_scores.append(
-            lens.score(
-                complex=original,
-                simplified=simplification,
-                references=[original],
-                batch_size=1,
-                gpus=1,
-            )[0]
+            divide(
+                lens.score(
+                    complex=original,
+                    simplified=simplification,
+                    references=[original],
+                    batch_size=1,
+                    gpus=1,
+                )[0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         coverage_scores.append(
-            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
-            * 100
+            multiply(
+                coverage_kis.score(bodies=original, decodeds=simplification)["scores"][
+                    0
+                ]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         meaningbert_scores.append(
-            meaning_bert.compute(references=original, predictions=simplification)[
-                "scores"
-            ][0]
+            divide(
+                meaning_bert.compute(references=original, predictions=simplification)[
+                    "scores"
+                ][0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         sentence_emb_scores.append(
-            best_sentence_emb.similarity(
-                best_sentence_emb.encode(original),
-                best_sentence_emb.encode(simplification),
-            ).tolist()[0][0]
-            * 100
+            multiply(
+                best_sentence_emb.similarity(
+                    best_sentence_emb.encode(original),
+                    best_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
         )
 
     # Compilation of the scores per metrics
@@ -343,56 +373,67 @@ def compute_other_metrics_on_holdout_unrelated_set(
         # Default model is the best
         # We use the precision, recall and F1
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         bertscore_score = bertscore.compute(
             predictions=simplification, references=original, lang="en", device=device
         )
-        bertscore_precision_scores.append(bertscore_score["precision"][0] * 100)
-        bertscore_recall_scores.append(bertscore_score["recall"][0] * 100)
-        bertscore_f1_scores.append(bertscore_score["f1"][0] * 100)
+        bertscore_precision_scores.append(multiply(bertscore_score["precision"][0]))
+        bertscore_recall_scores.append(multiply(bertscore_score["recall"][0]))
+        bertscore_f1_scores.append(multiply(bertscore_score["f1"][0]))
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         questeval_scores.append(
-            questeval.corpus_questeval(sources=original, hypothesis=simplification)[
-                "ex_level_scores"
-            ][0]
-            * 100
+            multiply(
+                questeval.corpus_questeval(sources=original, hypothesis=simplification)[
+                    "ex_level_scores"
+                ][0]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         lens_scores.append(
-            lens.score(
-                complex=original,
-                simplified=simplification,
-                references=[original],
-                batch_size=1,
-                gpus=1,
-            )[0]
+            divide(
+                lens.score(
+                    complex=original,
+                    simplified=simplification,
+                    references=[original],
+                    batch_size=1,
+                    gpus=1,
+                )[0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         coverage_scores.append(
-            coverage_kis.score(bodies=original, decodeds=simplification)["scores"][0]
-            * 100
+            multiply(
+                coverage_kis.score(bodies=original, decodeds=simplification)["scores"][
+                    0
+                ]
+            )
         )
 
         # Between 0 and 100: 100 is the best
+        # We divide by 10 to get a 0-10 scores
         meaningbert_scores.append(
-            meaning_bert.compute(references=original, predictions=simplification)[
-                "scores"
-            ][0]
+            divide(
+                meaning_bert.compute(references=original, predictions=simplification)[
+                    "scores"
+                ][0]
+            )
         )
 
         # Between 0 and 1: 1 is the best
-        # We multiply by 100 to get a 0-100 scores
+        # We multiply by 10 to get a 0-10 scores
         sentence_emb_scores.append(
-            best_sentence_emb.similarity(
-                best_sentence_emb.encode(original),
-                best_sentence_emb.encode(simplification),
-            ).tolist()[0][0]
-            * 100
+            multiply(
+                best_sentence_emb.similarity(
+                    best_sentence_emb.encode(original),
+                    best_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
         )
 
     # Compilation of the scores per metrics
