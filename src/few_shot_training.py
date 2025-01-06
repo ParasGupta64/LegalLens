@@ -179,6 +179,7 @@ trainer.evaluate(
 )
 predictions = trainer.predict(test_dataset=tokenized_legal_annotation_dataset["test"])
 
+os.makedirs("predictions", exist_ok=True)
 with open(
     os.path.join("predictions", f"JUDGEBERT_{seed}_predictions.pickle"), "wb"
 ) as file:

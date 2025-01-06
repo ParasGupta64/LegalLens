@@ -219,6 +219,8 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         rmse_score = mean_squared_error(metric_score, ratings, squared=False)
         logger.log({f"test/{metric_name}_RMSE": rmse_score})
 
+        os.makedirs("predictions", exist_ok=True)
+
         file_path = f"{metric_name.replace(' ', '_')}"
         if data_augmentation:
             file_path += "_WithDA"
