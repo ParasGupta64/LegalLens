@@ -219,7 +219,11 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
         rmse_score = mean_squared_error(metric_score, ratings, squared=False)
         logger.log({f"test/{metric_name}_RMSE": rmse_score})
 
-        with open(f"{metric_name.replace(' ', '_')}_ratings.pickle", "wb") as file:
+        file_path = f"{metric_name.replace(' ', '_')}"
+        if data_augmentation:
+            file_path += "_WithDA"
+        file_path += "_ratings.pickle"
+        with open(file_path, "wb") as file:
             pickle.dump(metric_score, file)
 
 
