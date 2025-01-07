@@ -53,6 +53,9 @@ for data_augmentation in [False]:
         with open(os.path.join("predictions", file_path), "rb") as f:
             predictions = pickle.load(f)
 
+        if "JUDGEBERT" in metric_name:
+            predictions = [round(pred, 1) for pred in predictions.label_ids.tolist()]
+
         legal_precision_annotation_dataset = DatasetDict(
             {"train": train["train"], "dev": dev["train"], "test": test["train"]}
         )
