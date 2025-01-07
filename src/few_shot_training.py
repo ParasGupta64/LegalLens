@@ -180,9 +180,13 @@ trainer.evaluate(
 predictions = trainer.predict(test_dataset=tokenized_legal_annotation_dataset["test"])
 
 os.makedirs("predictions", exist_ok=True)
-with open(
-    os.path.join("predictions", f"JUDGEBERT_{seed}_predictions.pickle"), "wb"
-) as file:
+
+file_path = f"JUDGEBERT_{seed}"
+if data_augmentation:
+    file_path += "_WithDA"
+file_path += "_predictions.pickle"
+
+with open(os.path.join("predictions", file_path), "wb") as file:
     pickle.dump(predictions, file)
 
 # We change the computed metrics for the holdout splits
