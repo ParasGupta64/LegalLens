@@ -172,9 +172,7 @@ print(
         columns=[
             "With DA",
             "Model Name",
-            "R2",
             "Pearson Corr",
-            "P-value",
             "RMSE",
             "Identical 99",
             "Unrelated 1",
@@ -185,7 +183,7 @@ print(
 
 print(
     results_std.to_latex(
-        columns=["With DA", "Model Name", "R2", "Pearson Corr", "P-value", "RMSE"],
+        columns=["With DA", "Model Name", "Pearson Corr", "RMSE"],
         float_format="%.2f",
     )
 )
