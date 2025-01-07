@@ -6,15 +6,14 @@ from datasets import load_dataset, DatasetDict
 root_dir = os.path.join(".", "datastore", "training")
 
 metric_names = [
-    "BERTScore precision",
-    "BERTScore recall",
     "BERTScore F1",
     "QuestEval",
     "LENS",
     "Coverage",
     "MeaningBERT",
     "SBERT Embeddings",
-]
+] + [f"JUDGEBERT_{x}" for x in range(42, 52)]
+
 
 for data_augmentation in [False]:
     for metric_name in metric_names:
