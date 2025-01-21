@@ -33,12 +33,13 @@ def evaluation_loop(
 
     device = torch.device("cuda")
 
+    clean_model_name = model_name.split("/")[-1]
+
     wandb.init(
         project=f"kil_llm_eval",
         config={"model_name": model_name, "data_augmentation": data_augmentation},
-        name=f"{model_name}_with_DA-{data_augmentation}",
+        name=f"{clean_model_name}_with_DA-{data_augmentation}",
     )
-    clean_model_name = model_name.split("/")[-1]
 
     model, tokenizer = model_tokenizer_factory(
         model_name=model_name,
