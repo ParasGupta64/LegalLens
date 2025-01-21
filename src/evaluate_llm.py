@@ -23,7 +23,6 @@ if __name__ == "__main__":
 
     model_name = args.model_name
     data_augmentation = args.data_augmentation
-    device_id = args.device_id
 
     evaluation_loop(
         model_name=model_name,
