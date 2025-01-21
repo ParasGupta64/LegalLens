@@ -82,7 +82,7 @@ def evaluation_loop(
         **params,
     )
     prediction = np.array(process_dataset["prediction"])
-    labels = holdout_identical_dataset["label"]
+    labels = holdout_identical_dataset["train"]["label"]
     payload.update(
         {
             f"test/{clean_model_name}_{k}": v
@@ -103,7 +103,7 @@ def evaluation_loop(
         **params,
     )
     prediction = np.array(process_dataset["prediction"])
-    labels = holdout_unrelated_dataset["label"]
+    labels = holdout_unrelated_dataset["train"]["label"]
     payload.update(
         {
             f"test/{clean_model_name}_{k}": v
