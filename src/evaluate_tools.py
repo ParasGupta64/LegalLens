@@ -32,9 +32,9 @@ prompt_fr = (
     "hallucination, omission ou cohérence entre le texte original et la simplification. Nous entendons par "
     "hallucinations les faits inclus dans la simplification qui n'apparaissent pas dans le texte original, "
     "par omissions les cas où des faits essentiels de l'original ne figurent pas dans le texte simplifié, et "
-    "par cohérence les incohérences dans le vocabulaire utilisé dans la simplification."
-    "Texte original :"
-    "Texte simplifié :"
+    "par cohérence les incohérences dans le vocabulaire utilisé dans la simplification. "
+    'Texte original : "{}" '
+    'Texte simplifié : "{}"'
 )
 
 
