@@ -20,7 +20,7 @@ from transformers import (
 )
 
 from metrics.model_salience import CoverageModel
-from dataset_factory import dataset_factory
+from factory_dataset import dataset_factory
 from tools import (
     bool_parse,
 )

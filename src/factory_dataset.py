@@ -4,7 +4,7 @@ from datasets import load_dataset, DatasetDict
 
 
 def dataset_factory(data_augmentation: bool):
-    root_dir = os.path.join("", "datastore", "training")
+    root_dir = os.path.join("..", "datastore", "training")
     if data_augmentation:
         train = load_dataset(
             root_dir,

@@ -6,9 +6,9 @@ import torch
 import wandb
 from dotenv import dotenv_values
 
-from dataset_factory import dataset_factory
+from factory_dataset import dataset_factory
 from evaluate_tools import evaluation_llm_prompting
-from factory import model_tokenizer_factory
+from factory_model_tokenizer import model_tokenizer_factory
 from metrics.metrics import (
     compute_metrics,
     eval_compute_metrics_identical,
