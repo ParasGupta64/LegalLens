@@ -22,13 +22,11 @@ os.environ["WANDB_SILENT"] = "true"
 def evaluation_loop(
     model_name: str,
     data_augmentation: bool,
-    device_id: str = "0",
 ):
     secrets = dotenv_values(".env")
 
     huggingface_token = secrets["huggingface_token"]
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = device_id
     device = torch.device("cuda")
 
     wandb.init(

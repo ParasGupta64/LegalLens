@@ -19,13 +19,6 @@ if __name__ == "__main__":
         help="Whether to compute use the data augmentation dataset.",
     )
 
-    parser.add_argument(
-        "--device_id",
-        type=str,
-        default="0",
-        help="Device ID tu use to be visible by CUDA.",
-    )
-
     args = parser.parse_args()
 
     model_name = args.model_name
@@ -35,5 +28,4 @@ if __name__ == "__main__":
     evaluation_loop(
         model_name=model_name,
         data_augmentation=data_augmentation,
-        device_id=device_id,
     )
