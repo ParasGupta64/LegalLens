@@ -76,13 +76,13 @@ def evaluation_loop(
         sep="\t",
     )
 
-    process_dataset = holdout_identical_dataset.map(
+    process_dataset = holdout_identical_dataset["train"].map(
         evaluation_fn,
         desc=f"----Doing model {model_name} for identical set-----",
         **params,
     )
-    prediction = np.array(process_dataset["train"]["prediction"])
-    labels = holdout_identical_dataset["train"]["label"]
+    prediction = np.array(process_dataset["prediction"])
+    labels = holdout_identical_dataset["label"]
     payload.update(
         {
             f"test/{clean_model_name}_{k}": v
@@ -97,13 +97,13 @@ def evaluation_loop(
         sep="\t",
     )
 
-    process_dataset = holdout_unrelated_dataset.map(
+    process_dataset = holdout_unrelated_dataset["train"].map(
         evaluation_fn,
         desc=f"----Doing model {model_name} for unrelated set-----",
         **params,
     )
-    prediction = np.array(process_dataset["train"]["prediction"])
-    labels = holdout_unrelated_dataset["train"]["label"]
+    prediction = np.array(process_dataset["prediction"])
+    labels = holdout_unrelated_dataset["label"]
     payload.update(
         {
             f"test/{clean_model_name}_{k}": v
