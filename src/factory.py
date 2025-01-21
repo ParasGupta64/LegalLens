@@ -10,7 +10,6 @@ from transformers import (
 from transformers import logging
 
 from unsloth import FastLanguageModel
-from baseline_models import RandomClassBaselineModel, MajorityVoteModel
 
 logging.set_verbosity_warning()
 
@@ -28,12 +27,6 @@ def model_tokenizer_factory(model_name, device, token, seed: int = 42):
         model = AutoModelForMaskedLM.from_pretrained(model_name).to(device)
         model.eval()
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-    elif "aléatoire" in model_name.lower():
-        model = RandomClassBaselineModel(seed=seed)
-        tokenizer = None
-    elif "annotateurs" in model_name.lower():
-        model = MajorityVoteModel()
-        tokenizer = None
     elif (
         "bloom" in model_name.lower()
         or "moe" in model_name.lower()
