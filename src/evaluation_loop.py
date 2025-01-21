@@ -68,7 +68,7 @@ def evaluation_loop(
         f"test/{clean_model_name}_{k}": v
         for k, v in compute_metrics((prediction, labels)).items()
     }
-    process_dataset["prediction"].to_csv(
+    process_dataset["train"].to_csv(
         os.path.join(
             output_dir, f"{model_name.replace('/', '_')}_predictions_test.tsv"
         ),
@@ -89,7 +89,7 @@ def evaluation_loop(
             for k, v in eval_compute_metrics_identical((prediction, labels)).items()
         }
     )
-    process_dataset["prediction"].to_csv(
+    process_dataset["train"].to_csv(
         os.path.join(
             output_dir, f"{model_name.replace('/', '_')}_predictions_identical.tsv"
         ),
@@ -110,7 +110,7 @@ def evaluation_loop(
             for k, v in eval_compute_metrics_unrelated((prediction, labels)).items()
         }
     )
-    process_dataset["prediction"].to_csv(
+    process_dataset["train"].to_csv(
         os.path.join(
             output_dir, f"{model_name.replace('/', '_')}_predictions_unrelated.tsv"
         ),
