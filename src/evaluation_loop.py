@@ -65,10 +65,7 @@ def evaluation_loop(
 
     prediction = np.array(process_dataset["prediction"])
     labels = legal_precision_annotation_dataset["test"]["label"]
-    payload = {
-        f"test/{clean_model_name}_{k}": v
-        for k, v in compute_metrics((prediction, labels)).items()
-    }
+    payload = {f"test/{k}": v for k, v in compute_metrics((prediction, labels)).items()}
     process_dataset.to_csv(
         os.path.join(
             output_dir, f"{model_name.replace('/', '_')}_predictions_test.tsv"
@@ -86,7 +83,7 @@ def evaluation_loop(
     labels = holdout_identical_dataset["train"]["label"]
     payload.update(
         {
-            f"test/{clean_model_name}_{k}": v
+            f"test/{k}": v
             for k, v in eval_compute_metrics_identical((prediction, labels)).items()
         }
     )
@@ -107,7 +104,7 @@ def evaluation_loop(
     labels = holdout_unrelated_dataset["train"]["label"]
     payload.update(
         {
-            f"test/{clean_model_name}_{k}": v
+            f"test/{k}": v
             for k, v in eval_compute_metrics_unrelated((prediction, labels)).items()
         }
     )
