@@ -5,7 +5,6 @@ import pickle
 import shutil
 
 import wandb
-from datasets import load_dataset, DatasetDict
 from poutyne import set_seeds
 from transformers import (
     AutoModelForSequenceClassification,
@@ -20,6 +19,7 @@ from metrics.metrics import (
     eval_compute_metrics_identical,
     eval_compute_metrics_unrelated,
 )
+from dataset_factory import dataset_factory
 from tools import (
     bool_parse,
 )
@@ -72,45 +72,12 @@ data_augmentation = args.data_augmentation
 num_epoch = args.epochs
 
 set_seeds(seed=seed)
-root_dir = os.path.join("..", "datastore", "training")
 
-if data_augmentation:
-    train = load_dataset(
-        root_dir,
-        data_files=["train_FrJUDGE_with_data_augmentation.jsonl"],
-    )
-    dev = load_dataset(
-        root_dir,
-        data_files=["dev_FrJUDGE_with_data_augmentation.jsonl"],
-    )
-    test = load_dataset(
-        root_dir,
-        data_files=["test_FrJUDGE_with_data_augmentation.jsonl"],
-    )
-else:
-    train = load_dataset(
-        root_dir,
-        data_files=["train_FrJUDGE.jsonl"],
-    )
-    dev = load_dataset(
-        root_dir,
-        data_files=["dev_FrJUDGE.jsonl"],
-    )
-    test = load_dataset(
-        root_dir,
-        data_files=["test_FrJUDGE.jsonl"],
-    )
-
-legal_precision_annotation_dataset = DatasetDict(
-    {"train": train["train"], "dev": dev["train"], "test": test["train"]}
-)
-
-holdout_identical_dataset = load_dataset(
-    root_dir, data_files=["holdout_identical_FrJUDGE.jsonl"]
-)
-holdout_unrelated_dataset = load_dataset(
-    root_dir, data_files=["holdout_unrelated_FrJUDGE.jsonl"]
-)
+(
+    legal_precision_annotation_dataset,
+    holdout_identical_dataset,
+    holdout_unrelated_dataset,
+) = dataset_factory(data_augmentation=data_augmentation)
 
 checkpoint = args.model_name
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
