@@ -36,7 +36,7 @@ def evaluation_loop(
     wandb.init(
         project=f"kil_llm_eval",
         config={"model_name": model_name, "data_augmentation": data_augmentation},
-        name=f"evaluate_LLM_with_DA-{data_augmentation}",
+        name=f"{model_name}_with_DA-{data_augmentation}",
     )
     clean_model_name = model_name.split("/")[-1]
 
