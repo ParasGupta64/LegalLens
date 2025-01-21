@@ -23,6 +23,10 @@ def evaluation_loop(
     model_name: str,
     data_augmentation: bool,
 ):
+    params = {"batched": True, "batch_size": 16}
+    output_dir = "predictions"
+    os.makedirs(output_dir, exist_ok=True)
+
     secrets = dotenv_values(".env")
 
     huggingface_token = secrets["huggingface_token"]
@@ -55,8 +59,7 @@ def evaluation_loop(
     ) = dataset_factory(data_augmentation=data_augmentation)
 
     process_dataset = legal_precision_annotation_dataset["test"].map(
-        evaluation_fn,
-        desc=f"----Doing model {model_name}-----",
+        evaluation_fn, desc=f"----Doing model {model_name} for test set-----", **params
     )
 
     prediction = np.array(process_dataset["prediction"])
@@ -65,10 +68,18 @@ def evaluation_loop(
         f"test/{clean_model_name}_{k}": v
         for k, v in compute_metrics((prediction, labels)).items()
     }
+    process_dataset["prediction"].to_csv(
+        os.path.join(
+            output_dir, f"{model_name.replace('/', '_')}_predictions_test.tsv"
+        ),
+        index=False,
+        sep="\t",
+    )
 
     process_dataset = holdout_identical_dataset.map(
         evaluation_fn,
-        desc=f"----Doing model {model_name}-----",
+        desc=f"----Doing model {model_name} for identical set-----",
+        **params,
     )
     prediction = np.array(process_dataset["train"]["prediction"])
     labels = holdout_identical_dataset["train"]["label"]
@@ -78,10 +89,18 @@ def evaluation_loop(
             for k, v in eval_compute_metrics_identical((prediction, labels)).items()
         }
     )
+    process_dataset["prediction"].to_csv(
+        os.path.join(
+            output_dir, f"{model_name.replace('/', '_')}_predictions_identical.tsv"
+        ),
+        index=False,
+        sep="\t",
+    )
 
     process_dataset = holdout_unrelated_dataset.map(
         evaluation_fn,
-        desc=f"----Doing model {model_name}-----",
+        desc=f"----Doing model {model_name} for unrelated set-----",
+        **params,
     )
     prediction = np.array(process_dataset["train"]["prediction"])
     labels = holdout_unrelated_dataset["train"]["label"]
@@ -90,6 +109,13 @@ def evaluation_loop(
             f"test/{clean_model_name}_{k}": v
             for k, v in eval_compute_metrics_unrelated((prediction, labels)).items()
         }
+    )
+    process_dataset["prediction"].to_csv(
+        os.path.join(
+            output_dir, f"{model_name.replace('/', '_')}_predictions_unrelated.tsv"
+        ),
+        index=False,
+        sep="\t",
     )
 
     wandb.log({**payload})
