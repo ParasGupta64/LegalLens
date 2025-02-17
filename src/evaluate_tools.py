@@ -49,7 +49,11 @@ def evaluation_llm_prompting(rows, tokenizer, model):
         ]
 
         pipe = pipeline(
-            model=model, tokenizer=tokenizer, task="zero-shot-classification"
+            model=model,
+            tokenizer=tokenizer,
+            task="zero-shot-classification",
+            torch_dtype="float16",
+            num_workers=2,
         )
         outputs = pipe(
             formated_prompts,

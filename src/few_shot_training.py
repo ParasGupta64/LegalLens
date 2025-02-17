@@ -28,6 +28,9 @@ log = logging.getLogger("pytorch_lightning")
 log.propagate = False
 log.setLevel(logging.ERROR)
 
+# Boilerplate params
+os.environ["WANDB_PROJECT"] = "KILL"  # To control the Wandb project name in HuggingFace
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--seed",

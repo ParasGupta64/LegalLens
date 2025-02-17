@@ -15,7 +15,7 @@ metric_names = [
 ] + [f"JUDGEBERT_{x}" for x in range(42, 52)]
 
 
-for data_augmentation in [False]:
+for data_augmentation in [False, True]:
     for metric_name in metric_names:
         if data_augmentation:
             train = load_dataset(
