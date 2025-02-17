@@ -135,6 +135,8 @@ trainer = Trainer(
 print("----------Training start----------")
 trainer.train()
 
+trainer.save_model()
+
 wandb.run.config.update(
     {
         "data_augmentation": f"{str(data_augmentation)} {num_epoch} holdout fixed",
