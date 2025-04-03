@@ -12,6 +12,7 @@ from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
     Trainer,
+    EarlyStoppingCallback,
 )
 
 from metrics.metrics import (
