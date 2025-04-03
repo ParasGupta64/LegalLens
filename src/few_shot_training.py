@@ -118,7 +118,6 @@ training_args = TrainingArguments(
     seed=seed,
     metric_for_best_model="eval_loss",
     learning_rate=5e-5,
-    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )
 
 # num_labels to 1 to create a regression head
@@ -133,6 +132,7 @@ trainer = Trainer(
     data_collator=data_collator,
     tokenizer=tokenizer,
     compute_metrics=compute_metrics,
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )
 print("----------Training start----------")
 trainer.train()
