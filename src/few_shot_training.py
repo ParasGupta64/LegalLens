@@ -132,7 +132,7 @@ trainer = Trainer(
     data_collator=data_collator,
     tokenizer=tokenizer,
     compute_metrics=compute_metrics,
-    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
+    # callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )
 print("----------Training start----------")
 trainer.train()

@@ -9,7 +9,7 @@ saving_dir = "figs"
 api = wandb.Api()
 
 # Project is specified by <entity/project-name>
-runs = api.runs(f"davebulaval/huggingface")
+runs = api.runs(f"davebulaval/KILL")
 
 evaluation_metrics_names = [
     "BERTScore precision",
