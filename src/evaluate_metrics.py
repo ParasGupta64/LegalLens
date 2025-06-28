@@ -71,6 +71,9 @@ coverage_kis = CoverageModel(model_file=coverage_model_ckpt)
 meaning_bert = load("davebulaval/meaningbert")
 
 best_sentence_emb = SentenceTransformer("sentence-t5-xxl", device="cuda:0")
+multilingual_sentence_emb = SentenceTransformer(
+    "distiluse-base-multilingual-cased-v1", device="cuda:0"
+)
 
 
 def multiply(x):
@@ -107,6 +110,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
+    sentence_mutli_emb_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -184,6 +188,15 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             )
         )
 
+        sentence_mutli_emb_scores.append(
+            multiply(
+                multilingual_sentence_emb.similarity(
+                    multilingual_sentence_emb.encode(original),
+                    multilingual_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -195,6 +208,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
+            "SBERT Multi Embeddings",
         ],
         [
             bertscore_precision_scores,
@@ -205,6 +219,7 @@ def compute_other_metrics_on_test_set(test_set, logger, device: str = "cuda:0"):
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
+            sentence_mutli_emb_scores,
         ],
     ):
         pearson_corr = pearsonr_metric.compute(
@@ -240,6 +255,7 @@ def compute_other_metrics_on_holdout_identical_set(
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
+    sentence_mutli_emb_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -318,6 +334,15 @@ def compute_other_metrics_on_holdout_identical_set(
             )
         )
 
+        sentence_mutli_emb_scores.append(
+            multiply(
+                multilingual_sentence_emb.similarity(
+                    multilingual_sentence_emb.encode(original),
+                    multilingual_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -329,6 +354,7 @@ def compute_other_metrics_on_holdout_identical_set(
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
+            "SBERT Multi Embeddings",
         ],
         [
             bertscore_precision_scores,
@@ -339,6 +365,7 @@ def compute_other_metrics_on_holdout_identical_set(
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
+            sentence_mutli_emb_scores,
         ],
     ):
         counts_95 = [round(s) > 95 for s in metric_score]
@@ -364,6 +391,7 @@ def compute_other_metrics_on_holdout_unrelated_set(
     coverage_scores = []
     meaningbert_scores = []
     sentence_emb_scores = []
+    sentence_mutli_emb_scores = []
     ratings = []
 
     # Processing of all scores on the dataset
@@ -442,6 +470,15 @@ def compute_other_metrics_on_holdout_unrelated_set(
             )
         )
 
+        sentence_mutli_emb_scores.append(
+            multiply(
+                multilingual_sentence_emb.similarity(
+                    multilingual_sentence_emb.encode(original),
+                    multilingual_sentence_emb.encode(simplification),
+                ).tolist()[0][0]
+            )
+        )
+
     # Compilation of the scores per metrics
     for metric_name, metric_score in zip(
         [
@@ -453,6 +490,7 @@ def compute_other_metrics_on_holdout_unrelated_set(
             "Coverage",
             "MeaningBERT",
             "SBERT Embeddings",
+            "SBERT Multi Embeddings",
         ],
         [
             bertscore_precision_scores,
@@ -463,6 +501,7 @@ def compute_other_metrics_on_holdout_unrelated_set(
             coverage_scores,
             meaningbert_scores,
             sentence_emb_scores,
+            sentence_mutli_emb_scores,
         ],
     ):
         counts_1 = [round(s) < 1 for s in metric_score]
