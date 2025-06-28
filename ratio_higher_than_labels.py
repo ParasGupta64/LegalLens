@@ -12,6 +12,7 @@ metric_names = [
     "Coverage",
     "MeaningBERT",
     "SBERT Embeddings",
+    "SBERT Multi Embeddings",
 ] + [f"JUDGEBERT_{x}" for x in range(42, 52)]
 
 

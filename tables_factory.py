@@ -9,7 +9,7 @@ saving_dir = "figs"
 api = wandb.Api()
 
 # Project is specified by <entity/project-name>
-runs = api.runs(f"davebulaval/KILL")
+runs = api.runs("davebulaval/huggingface")
 
 evaluation_metrics_names = [
     "BERTScore precision",
@@ -22,6 +22,7 @@ evaluation_metrics_names = [
     "SBERT Embeddings",
     "SBERT Semantic Search",
     "SBERT Average Perf",
+    "SBERT Multi Embeddings",
 ]
 
 # Metadata
