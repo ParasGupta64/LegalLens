@@ -129,8 +129,8 @@ def compute_stats(row, key):
 root = ".."
 
 insurance_text_simplification = load_dataset(
-    os.path.join(root, "datastore", "unannotated"),
-    data_files=["insurance_text_snippets.jsonl"],
+    os.path.join(root, "datastore", "annotated"),
+    data_files=["insurance_text_simplifications_annotated.jsonl"],
 )
 
 vocabulary_cardinality = set()
