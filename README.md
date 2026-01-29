@@ -41,7 +41,13 @@ This dataset is under [CC-BY-NC-SA 4.0](https://creativecommons.org/licenses/by-
 ### To Cite
 
 ```
-...
+@inproceedings{beauchemin2025judgebert,
+  title={JUDGEBERT: Assessing Legal Meaning Preservation Between Sentences},
+  author={Beauchemin, David and Albert-Rochette, Michelle and Khoury, Richard and D{\'e}ziel, Pierre-Luc},
+  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
+  pages={92--118},
+  year={2025}
+}
 ```
 
 ## About the Source Code
