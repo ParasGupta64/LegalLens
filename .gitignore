@@ -5,3 +5,8 @@ proprietary_dependencies/
 
 *.pem
 *.zip
+
+
+# Python environments
+.venv/
+venv/

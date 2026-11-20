@@ -9,3 +9,5 @@ plotly
 matplotlib==3.7.1
 wandb
 poutyne
+winocr>=0.0.15; platform_system == "Windows"
+pytesseract>=0.3.10

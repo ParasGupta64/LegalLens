@@ -1,0 +1,10 @@
+datasets
+openai
+python-dotenv
+langchain
+langchain-community
+langchain-openai
+prodigy-iaa
+plotly
+wandb
+poutyne
