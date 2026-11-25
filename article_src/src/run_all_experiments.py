@@ -203,24 +203,40 @@ def run_experiment_2_and_3(
     print(f"Sentence-Only JUDGEBERT -> Pearson r: {metrics_sent['pearson_r']:.4f} | RMSE: {metrics_sent['rmse']:.4f} | MAE: {metrics_sent['mae']:.4f} | Decision Acc: {metrics_sent['decision_acc']*100:.1f}%", flush=True)
     print(f"Context-Aware JUDGEBERT -> Pearson r: {metrics_ctx['pearson_r']:.4f} | RMSE: {metrics_ctx['rmse']:.4f} | MAE: {metrics_ctx['mae']:.4f} | Decision Acc: {metrics_ctx['decision_acc']*100:.1f}%", flush=True)
 
-    # Experiment 2: Cross-Lingual Breakdown
+    # Experiment 2: Cross-Lingual Breakdown (English, Hindi and Punjabi)
     print("\n" + "=" * 70, flush=True)
-    print("EXPERIMENT 2 RESULTS: Cross-Lingual Evaluation (English vs. Hindi)", flush=True)
+    print("EXPERIMENT 2 RESULTS: Cross-Lingual Evaluation (English, Hindi & Punjabi)", flush=True)
     print("=" * 70, flush=True)
 
-    en_test = [r for r in test_records if r["language"] == "en"]
-    hi_test = [r for r in test_records if r["language"] == "hi"]
+    language_metrics = {}
+    language_codes = {"english": "en", "hindi": "hi", "punjabi": "pa"}
+    for language_name, language_code in language_codes.items():
+        lang_records = [r for r in test_records if str(r.get("language", "")).lower() in (language_code, language_name)]
+        if len(lang_records) < 2:
+            language_metrics[language_name] = {
+                "status": "not_evaluated",
+                "count": len(lang_records),
+                "reason": "At least two labelled test records are required."
+            }
+            print(f"{language_name.title()} Sub-Corpus (N={len(lang_records)}) -> NOT EVALUATED: insufficient labelled test records.", flush=True)
+            continue
 
-    en_ds = LegalPairsDataset(en_test, tokenizer, mode="context_aware")
-    en_loader = DataLoader(en_ds, batch_size=16, shuffle=False, collate_fn=lambda b: collate_legal_batch(b, tokenizer))
-    en_metrics = evaluate_model(model_ctx, en_loader, device)
+        lang_ds = LegalPairsDataset(lang_records, tokenizer, mode="context_aware")
+        lang_loader = DataLoader(lang_ds, batch_size=16, shuffle=False, collate_fn=lambda b: collate_legal_batch(b, tokenizer))
+        metrics = evaluate_model(model_ctx, lang_loader, device)
+        language_metrics[language_name] = {
+            "status": "evaluated",
+            "count": len(lang_records),
+            "pearson_r": round(float(metrics["pearson_r"]), 4),
+            "rmse": round(float(metrics["rmse"]), 4),
+            "mae": round(float(metrics["mae"]), 4),
+            "acc": round(float(metrics["decision_acc"]), 4),
+        }
+        print(f"{language_name.title()} Sub-Corpus (N={len(lang_records)}) -> Pearson r: {metrics['pearson_r']:.4f} | RMSE: {metrics['rmse']:.4f} | Acc: {metrics['decision_acc']*100:.1f}%", flush=True)
 
-    hi_ds = LegalPairsDataset(hi_test, tokenizer, mode="context_aware")
-    hi_loader = DataLoader(hi_ds, batch_size=16, shuffle=False, collate_fn=lambda b: collate_legal_batch(b, tokenizer))
-    hi_metrics = evaluate_model(model_ctx, hi_loader, device)
-
-    print(f"English Sub-Corpus (N={len(en_test)}) -> Pearson r: {en_metrics['pearson_r']:.4f} | RMSE: {en_metrics['rmse']:.4f} | Acc: {en_metrics['decision_acc']*100:.1f}%", flush=True)
-    print(f"Hindi Sub-Corpus   (N={len(hi_test)}) -> Pearson r: {hi_metrics['pearson_r']:.4f} | RMSE: {hi_metrics['rmse']:.4f} | Acc: {hi_metrics['decision_acc']*100:.1f}%", flush=True)
+    en_metrics = language_metrics["english"]
+    hi_metrics = language_metrics["hindi"]
+    pa_metrics = language_metrics["punjabi"]
 
     domain_results = {}
     for dom in ["contract", "statute", "judgment"]:
@@ -310,18 +326,15 @@ def run_experiment_5_case_studies(
     print("EXPERIMENT 5: Qualitative Error Analysis (15 Case Studies)", flush=True)
     print("=" * 70, flush=True)
 
-    target_ids = [
-        "EN_CONT_001", "EN_CONT_006", "EN_CONT_011", "EN_CONT_012", "EN_CONT_013",
-        "EN_STAT_001", "EN_STAT_006", "EN_STAT_011",
-        "EN_JUDG_001", "EN_JUDG_006",
-        "HI_CONT_001", "HI_CONT_006", "HI_CONT_011",
-        "HI_STAT_001", "HI_JUDG_001",
-    ]
-
-    record_map = {r["pair_id"]: r for r in records}
-    selected = [record_map[pid] for pid in target_ids if pid in record_map]
+    # Select case studies from English, Hindi and Punjabi where records exist.
+    selected = []
+    for lang_code in ("en", "hi", "pa"):
+        lang_records = [r for r in records if str(r.get("language", "")).lower() == lang_code]
+        selected.extend(lang_records[:5])
     if len(selected) < 15:
-        selected.extend(records[: 15 - len(selected)])
+        selected_ids = {r.get("pair_id") for r in selected}
+        selected.extend([r for r in records if r.get("pair_id") not in selected_ids][:15-len(selected)])
+    selected = selected[:15]
 
     sbert_case_scores = compute_sbert_scores(selected, pretrained_encoder, tokenizer, device)
     case_studies = []
@@ -422,7 +435,7 @@ def main():
     exp5_cases = run_experiment_5_case_studies(model_ctx, pretrained_encoder, tokenizer, master_records, device)
 
     summary_report = {
-        "project_title": "Explainable Multilingual Legal Meaning Preservation Using JUDGEBERT",
+        "project_title": "LegalLens: Context-Aware Legal Meaning Preservation",
         "course": "CSET 346 – Natural Language Processing",
         "instructor": "Dr. Surabhi Solanki",
         "experiment_1_baseline_vs_judgebert": {
@@ -437,20 +450,7 @@ def main():
                 "decision_macro_f1": round(float(m_res["metrics_ctx"]["decision_macro_f1"]), 4),
             },
         },
-        "experiment_2_cross_lingual": {
-            "english": {
-                "rmse": round(float(m_res["en_metrics"]["rmse"]), 4),
-                "mae": round(float(m_res["en_metrics"]["mae"]), 4),
-                "pearson_r": round(float(m_res["en_metrics"]["pearson_r"]), 4),
-                "acc": round(float(m_res["en_metrics"]["decision_acc"]), 4),
-            },
-            "hindi": {
-                "rmse": round(float(m_res["hi_metrics"]["rmse"]), 4),
-                "mae": round(float(m_res["hi_metrics"]["mae"]), 4),
-                "pearson_r": round(float(m_res["hi_metrics"]["pearson_r"]), 4),
-                "acc": round(float(m_res["hi_metrics"]["decision_acc"]), 4),
-            },
-        },
+        "experiment_2_cross_lingual": m_res["language_metrics"],
         "experiment_3_context_aware_generalization": {
             "sentence_only": {
                 "rmse": round(float(m_res["metrics_sent"]["rmse"]), 4),
