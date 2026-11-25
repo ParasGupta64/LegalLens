@@ -1,55 +1,131 @@
 # LegalLens
-### AI-Powered Legal Text Analysis and Document Understanding
 
-LegalLens is an academic project that explores how artificial intelligence and natural language processing can make legal information easier to analyze and understand.
+### Assessing Legal Meaning Preservation Between Sentences
 
-The application brings together legal sentence comparison, legal-language simplification, document-based question answering, and OCR in a single Streamlit interface.
+LegalLens is an academic legal NLP application for comparing an original clause with a proposed simplification. It predicts a preservation score, a three-way decision, and diagnostic labels for possible changes to obligations, conditions, exceptions, and other legal details. The Streamlit interface supports English and Hindi, document chat, and image text extraction.
+
+[Research paper (PDF)](paper/LegalLens_IEEE_Paper.pdf) · [Editable paper (Word)](paper/LegalLens_IEEE_Paper.docx) · [Repository index](INDEX.md)
 
 ## Features
 
-- **Legal meaning comparison** — assess whether two legal sentences preserve the same meaning.
-- **Legal text simplification** — rewrite complex legal wording in more accessible language.
-- **Document question answering** — upload a document and ask questions about its contents.
-- **OCR-based text extraction** — extract text from supported document images.
-- **AI-assisted explanations** — provide accessible explanations to support the user's understanding of legal text.
+| Feature | Behavior |
+| --- | --- |
+| Legal meaning comparison | Score a clause pair from 1 to 10 with an optional context window |
+| Preservation decisions | Predict Preserved, Partially Preserved, or Not Preserved |
+| Diagnostic explanations | Describe predicted changes to legal content using nine error categories |
+| Clause simplification | Generate an English or Hindi rewrite, with local substitutions as a fallback |
+| Document chat | Retrieve passages from PDF/DOCX files and optionally generate an answer |
+| Image OCR | Extract text using compatible Windows OCR engines or Tesseract |
 
-## Technology
+Predictions require review against the original document. The supplied model can miss material obligation changes; it is not a validated legal decision system.
 
-- **Language:** Python
-- **Application:** Streamlit
-- **Machine learning:** PyTorch, Transformers, Sentence Transformers
-- **Language processing:** NLP and text-processing tools
-- **Document and image processing:** PDF/DOCX parsing and OCR
-- **Generative AI:** OpenAI API
+## Quick start
 
-## Run locally
+### Prerequisites
 
-Python 3.12 is recommended. Run commands from the repository root.
+- Python 3.12 is recommended.
+- Git and **Git LFS** must be installed to retrieve the model weights.
+- Internet access may be needed to download the pretrained encoder on first use.
+- Image OCR requires the Tesseract executable and language data (`eng` for English, `hin` for Hindi), unless a compatible Windows OCR engine is available.
+
+### 1. Clone and retrieve weights
 
 ```bash
 git lfs install
 git clone https://github.com/ParasGupta64/LegalLens.git
 cd LegalLens
 git lfs pull
+```
+
+The two checkpoint directories each contain a large model file. A small Git LFS pointer file is not usable model weights.
+
+### 2. Create an environment
+
+**macOS / Linux**
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 cp .env.example .env
+```
+
+**Windows PowerShell**
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+### 3. Configure optional generation
+
+Set the following in `.env` to enable OpenAI-powered simplification and document answers:
+
+```dotenv
+OPENAI_API_KEY=your_api_key_here
+```
+
+Without a key, simplification uses local substitutions and document chat displays matching excerpts. Model-based sentence comparison still requires the checkpoint and encoder. When external generation is enabled, relevant input text is sent to the provider. Keep real keys out of Git.
+
+### 4. Launch
+
+Run from the repository root:
+
+```bash
 streamlit run app.py
 ```
 
-On Windows, activate with `.venv\Scripts\activate` and use `copy .env.example .env`.
+For a command-line model demonstration:
 
-Set `OPENAI_API_KEY` in `.env` to enable external generation. Without a key, simplification uses local substitutions and chat displays matching excerpts. Relevant document excerpts are sent to the external provider when generation is enabled. Never commit real API keys.
+```bash
+python demo.py --interactive
+```
 
-The preservation model requires local Git LFS weights and may download its encoder from Hugging Face on first use. A Git LFS pointer is not a usable model file. For image OCR, install the Tesseract executable as well as the Python package, with `eng` and `hin` language data for English and Hindi; Windows native OCR is also attempted. Text extraction from scanned PDFs does not automatically invoke image OCR.
+## Usage
 
-## Repository index and paper
+1. Open **Legal Evaluator** and select a sample or enter an original clause and candidate rewrite.
+2. Choose English or Hindi and supply relevant context when available.
+3. Evaluate the pair, then inspect the score, decision, and diagnostic output against the source.
+4. Open **AI Document Chat** to upload a PDF or DOCX file (maximum 20 MB) and ask about its contents.
 
-See [INDEX.md](INDEX.md) for the code/data map and research limitations.
+Image OCR is a separate workflow. Uploading a scanned PDF does not automatically invoke OCR. Context windows and token limits can omit relevant definitions or exceptions.
 
-- [IEEE paper (PDF)](paper/LegalLens_IEEE_Paper.pdf)
-- [Editable paper (Word)](paper/LegalLens_IEEE_Paper.docx)
+## Research paper and reported results
+
+The [six-page IEEE-format paper](paper/LegalLens_IEEE_Paper.pdf) includes eight tables covering the corpus, model settings, baseline/context/language comparisons, sanity checks, and fifteen selected cases.
+
+The following figures reproduce the supplied project report. They have **not been independently reproduced** from a complete set of run artifacts in this repository.
+
+| Model / split | Pearson r | RMSE | Decision accuracy |
+| --- | ---: | ---: | ---: |
+| Generic SBERT (cosine similarity) | 0.2959 | 3.2125 | N/A |
+| LegalLens sentence-only | 0.6511 | 3.1017 | 51.0% |
+| LegalLens context-aware | 0.7676 | 2.3375 | 53.9% |
+| English sub-corpus | 0.7470 | 2.3124 | 47.1% |
+| Hindi sub-corpus | 0.7888 | 2.3623 | 60.8% |
+
+The report also gives MAE 0.33 and 15/15 decision agreement on selected cases. That selected-case agreement is not generalization accuracy. The shipped sentence-only and context-aware weights reference the same Git LFS object; their directory names do not establish two separately trained models. See [evidence and limitations](INDEX.md#evidence-and-limitations) before interpreting the results.
+
+## Repository map
+
+```text
+LegalLens/
+├── app.py                 # Streamlit application
+├── demo.py                # Command-line evaluator
+├── article_src/           # Model, preprocessing, retrieval, and research code
+├── checkpoints/           # Git LFS weights and tokenizers
+├── datastore/             # Research datasets and generated-data destinations
+├── annotation_tool/       # Original annotation tooling
+├── paper/                 # Research paper in Word and PDF
+├── tests/                 # Offline regression and UI smoke tests
+├── archive/               # Disabled generators with unverified fixed results
+├── .env.example           # Optional generation configuration
+└── requirements.txt       # Application dependencies
+```
+
+See [INDEX.md](INDEX.md) for individual modules and their roles.
 
 ## Validation
 
@@ -57,9 +133,9 @@ See [INDEX.md](INDEX.md) for the code/data map and research limitations.
 python -m unittest discover -s tests -v
 ```
 
-These offline tests cover rendering safety, upload limits, retrieval, chunking, and grouped data preparation. They do not certify legal accuracy or call paid APIs.
+Nine tests cover HTML escaping, file validation, chunking, retrieval abstention, source-grouped splits, checkpoint-pointer errors, explanations, and application navigation. UI tests mock inference; they do not validate the model's legal accuracy or call paid APIs.
 
-## Multilingual experiments
+## Reproducing experiments
 
 ```bash
 python article_src/dataset_creation/generate_multilingual_judge.py
@@ -67,49 +143,22 @@ python article_src/src/prepare_multilingual_training_corpora.py
 python article_src/src/run_all_experiments.py
 ```
 
-The last command trains models and can take substantial time; it overwrites the two checkpoint directories. Back up existing weights first. Generated datasets and predictions stay ignored by default. The benchmark is programmatically constructed, and source groups are kept within one split to prevent exact original-clause leakage. Cross-document and translation-level independence remain unverified.
+The final command trains models and overwrites both checkpoint directories. Back up existing weights before running it. Generated datasets and predictions are ignored by default.
 
-The supplied checkpoint files share one Git LFS object. No empirical superiority claim follows from their directory names. Archived generators contain unverified fixed values and are disabled. Use measured experiment outputs for any future performance claims.
+The generator produces 320 records but only 120 exact original/candidate pairs, with programmatically supplied labels. Current splits group original clauses to prevent exact source-text leakage. Document-level and translation-level independence still require provenance identifiers. Retain split membership, checkpoint hashes, and per-example predictions for future result verification.
 
-The inherited research scripts under `article_src/` have their own dependency files; they are separate from the application installation.
+The inherited research tools have separate dependency files under `article_src/`; the root requirements are for the application and multilingual workflow. Archived report generators contain unverified fixed figures and are disabled.
 
-## Research and Third-Party Attribution
+## Technology
 
-LegalLens is the project application. The repository also contains material associated with the JUDGEBERT research and dataset. That material remains attributable to its original authors and is subject to its applicable license.
+Python · Streamlit · PyTorch · Hugging Face Transformers · Sentence Transformers · scikit-learn TF-IDF retrieval · pypdf · python-docx · Pillow · Tesseract / Windows OCR · optional OpenAI API
 
-The JUDGEBERT dataset is identified as licensed under **CC BY-NC-SA 4.0**. Review the [license terms](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) before using or redistributing the dataset or adapted material.
+## Attribution and licensing
 
-If you use the JUDGEBERT research, cite the [original paper](https://aclanthology.org/2025.emnlp-main.5/) and retain [original repository attribution](https://github.com/GRAAL-Research/JUDGEBERT):
+LegalLens includes material from the original [JUDGEBERT research](https://aclanthology.org/2025.emnlp-main.5/) and [repository](https://github.com/GRAAL-Research/JUDGEBERT). That work remains attributable to its original authors. The dataset is identified as licensed under **CC BY-NC-SA 4.0**; review [LICENSE](LICENSE) and the [license terms](https://creativecommons.org/licenses/by-nc-sa/4.0/) before reuse or redistribution.
 
-```bibtex
-@inproceedings{beauchemin2025judgebert,
-  title={JUDGEBERT: Assessing Legal Meaning Preservation Between Sentences},
-  author={Beauchemin, David and Albert-Rochette, Michelle and Khoury, Richard and D{\\'e}ziel, Pierre-Luc},
-  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
-  pages={92--118},
-  year={2025}
-}
-```
+Original research citation:
 
-## Team
+> “JUDGEBERT: Assessing Legal Meaning Preservation Between Sentences,” Proceedings of EMNLP, 2025, pp. 92–118. DOI: [10.18653/v1/2025.emnlp-main.5](https://doi.org/10.18653/v1/2025.emnlp-main.5).
 
-| Member | Student ID |
-| --- | --- |
-| Paras Gupta | S24CSEU1954 |
-| Harsh Goyal | S24CSEU1936 |
-| Harshit Khatri | S24CSEU1951 |
-| Daksh Pratap Singh | S24CSEU2285 |
-
-Instructor: Surabhi Solanki.
-
-## Project Maintainer
-
-**Paras Gupta**  
-B.Tech, Computer Science and Engineering (AI & ML)  
-Bennett University, Greater Noida, India
-
-[GitHub Profile](https://github.com/ParasGupta64)
-
----
-
-*LegalLens is an academic project. Its outputs are intended to assist with understanding legal text and should not be treated as professional legal advice.*
+LegalLens supports academic exploration and document understanding. Its outputs are not a substitute for professional legal advice.
