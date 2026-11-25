@@ -62,7 +62,7 @@ def create_stratified_splits(records: list, seed: int = 42):
 
 
 def create_identical_augmentation(records: list) -> list:
-    """Creates identical pairs (Score = 10.0) for both English and Hindi."""
+    """Creates identical pairs (Score = 10.0) for every language represented in records."""
     identical_pairs = []
     for r in records:
         identical_pairs.append({
@@ -87,11 +87,14 @@ def create_unrelated_augmentation(records: list) -> list:
     """Creates completely unrelated legal pairs (Score = 1.0) within the same language."""
     unrelated_pairs = []
     
-    by_lang = {"en": [r for r in records if r["language"] == "en"],
-               "hi": [r for r in records if r["language"] == "hi"]}
-    
+    # Build same-language pools dynamically (English, Hindi, Punjabi, etc.).
+    by_lang = {}
+    for record in records:
+        code = str(record.get("language", "")).lower()
+        by_lang.setdefault(code, []).append(record)
+
     for r in records:
-        pool = by_lang[r["language"]]
+        pool = by_lang.get(str(r.get("language", "")).lower(), [])
         # Pick another record from a different domain or far away index
         candidates = [c for c in pool if c["domain"] != r["domain"]]
         if not candidates:
