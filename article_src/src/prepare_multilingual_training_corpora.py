@@ -140,7 +140,28 @@ def main():
     
     print(f"Loading master dataset from {src_file}...")
     records = load_multilingual_raw_dataset(src_file)
-    print(f"Loaded {len(records)} pairs.")
+    print(f"Loaded {len(records)} original benchmark pairs.")
+
+    # Optional Punjabi extension kept in a separate file to preserve the
+    # original English/Hindi benchmark. Append it only when present.
+    punjabi_file = os.path.join(root_datastore, "punjabi", "punjabi_legal_evaluation.jsonl")
+    if os.path.exists(punjabi_file):
+        punjabi_records = load_multilingual_raw_dataset(punjabi_file)
+        existing_ids = {r.get("pair_id") for r in records}
+        new_punjabi = [
+            r for r in punjabi_records
+            if r.get("language") == "pa" and r.get("pair_id") not in existing_ids
+        ]
+        records.extend(new_punjabi)
+        print(
+            f"Loaded {len(new_punjabi)} Punjabi extension pairs "
+            f"from {punjabi_file}. Combined total: {len(records)}."
+        )
+    else:
+        print(
+            "Punjabi extension not found; running the original benchmark only. "
+            f"Expected path: {punjabi_file}"
+        )
     
     # 1. Base Stratified Splits (without DA)
     train_records, dev_records, test_records = create_stratified_splits(records, seed=SEED)
