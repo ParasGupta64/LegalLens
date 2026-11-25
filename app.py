@@ -874,10 +874,10 @@ def main():
             with c1:
                 lang_display = st.selectbox(
                     "Language",
-                    options=["English", "\u0939\u093f\u0928\u094d\u0926\u0940"],
+                    options=["English", "\\u0939\\u093f\\u0928\\u094d\\u0926\\u0940", "ਪੰਜਾਬੀ"],
                     key="lang_select",
                 )
-                _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
+                _lang_map = {"English": "en", "\\u0939\\u093f\\u0928\\u094d\\u0926\\u0940": "hi", "ਪੰਜਾਬੀ": "pa"}
                 lang = _lang_map.get(lang_display, "en")
             with c2:
                 eval_mode = st.selectbox(
