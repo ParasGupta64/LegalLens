@@ -1164,15 +1164,30 @@ def main():
                 c_acc = c.get("decision_accuracy", c.get("decision_acc", c.get("acc", 0.0)))
                 rows.append({"Model / Split": "LegalLens (Context-Aware)", "Pearson r": c.get("pearson_r", 0.0), "RMSE": c.get("rmse", 0.0), "Decision Acc": f"{c_acc*100:.1f}%"})
             
-            e = exp2.get("english_subcorpus", exp2.get("english", {}))
-            if e:
-                e_acc = e.get("decision_accuracy", e.get("acc", 0.0))
-                rows.append({"Model / Split": "Cross-Lingual: English Sub-Corpus", "Pearson r": e.get("pearson_r", 0.0), "RMSE": e.get("rmse", 0.0), "Decision Acc": f"{e_acc*100:.1f}%"})
-            
-            h = exp2.get("hindi_subcorpus", exp2.get("hindi", {}))
-            if h:
-                h_acc = h.get("decision_accuracy", h.get("acc", 0.0))
-                rows.append({"Model / Split": "Cross-Lingual: Hindi Sub-Corpus", "Pearson r": h.get("pearson_r", 0.0), "RMSE": h.get("rmse", 0.0), "Decision Acc": f"{h_acc*100:.1f}%"})
+            for language_key, language_label, legacy_key in (
+                ("english", "English", "english_subcorpus"),
+                ("hindi", "Hindi", "hindi_subcorpus"),
+                ("punjabi", "Punjabi", "punjabi_subcorpus"),
+            ):
+                lang_result = exp2.get(language_key, exp2.get(legacy_key, {}))
+                if lang_result:
+                    if lang_result.get("status") == "not_evaluated":
+                        rows.append({
+                            "Model / Split": f"Cross-Lingual: {language_label} Sub-Corpus",
+                            "Pearson r": "Not evaluated",
+                            "RMSE": "Not evaluated",
+                            "Decision Acc": "Not evaluated",
+                            "Samples": lang_result.get("count", 0),
+                        })
+                    else:
+                        lang_acc = lang_result.get("decision_accuracy", lang_result.get("acc", 0.0))
+                        rows.append({
+                            "Model / Split": f"Cross-Lingual: {language_label} Sub-Corpus",
+                            "Pearson r": lang_result.get("pearson_r", 0.0),
+                            "RMSE": lang_result.get("rmse", 0.0),
+                            "Decision Acc": f"{lang_acc*100:.1f}%",
+                            "Samples": lang_result.get("count", "-"),
+                        })
 
             st.table(pd.DataFrame(rows))
 
