@@ -186,10 +186,10 @@ def generate_explanation(score: float, decision: str, detected_errors: List[str]
     """Produces explainable legal rationale based on model diagnostics."""
     if decision == "Preserved" and (not detected_errors or detected_errors == ["none"]):
         return (
-            "The simplified clause preserves all core legal rights, conditions, and obligations "
-            "with zero material distortion of legal consequences."
+            "The model predicts preserved meaning with no diagnostic flags. "
+            "Review the original clause; this prediction does not verify legal equivalence."
             if lang == "en" else
-            "सरलीकृत खंड मूल कानूनी अधिकारों, शर्तों और दायित्वों को पूरी तरह सुरक्षित रखता है।"
+            "मॉडल अर्थ सुरक्षित होने का अनुमान देता है। मूल खंड की समीक्षा करें; यह कानूनी समानता का प्रमाण नहीं है।"
         )
 
     parts = []
@@ -214,7 +214,7 @@ def generate_explanation(score: float, decision: str, detected_errors: List[str]
             parts.append("unsupported legal claims introduced in the simplification")
 
     joined_errors = ", ".join(parts) if parts else "a shift in legal nuance"
-    return f"Legal meaning is {decision.lower()} due to {joined_errors} (Predicted LMP: {score:.1f}/10)."
+    return f"Model prediction: {decision} (LMP: {score:.1f}/10). Possible issues: {joined_errors}. Review against the original clause."
 
 
 def evaluate_model(model: MultilingualJUDGEBERT, dataloader: DataLoader, device: torch.device):
@@ -343,7 +343,10 @@ def load_checkpoint(save_dir: str, device: Optional[torch.device] = None) -> Tup
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ckpt_path = os.path.join(save_dir, "model.pt")
-    ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+    with open(ckpt_path, "rb") as checkpoint_file:
+        if checkpoint_file.read(42).startswith(b"version https://git-lfs.github.com/spec/v1"):
+            raise ValueError("Checkpoint is a Git LFS pointer. Run git lfs pull first.")
+    ckpt = torch.load(ckpt_path, map_location=device, weights_only=True)
     tokenizer = AutoTokenizer.from_pretrained(save_dir)
     model = MultilingualJUDGEBERT(
         model_name=ckpt["model_name"],

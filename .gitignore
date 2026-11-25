@@ -10,3 +10,15 @@ proprietary_dependencies/
 # Python environments
 .venv/
 venv/
+
+# Local OS/editor files and generated outputs
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+.env.*
+!.env.example
+/predictions/
+/deliverables/
+/datastore/released/Multilingual_JUDGE.jsonl
+/datastore/training/*Multilingual_JUDGE*.jsonl

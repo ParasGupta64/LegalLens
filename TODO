@@ -1,4 +1,5 @@
-1. Add citation in the Readme
-2. Add the corpus URL in the Readme
-3. Add Article URL in the Readme
-4. Add the corpus on HG (optional)
+Research follow-up
+- Independently review bilingual labels and record annotator agreement.
+- Add source-document and translation identifiers for stronger grouped splits.
+- Train distinct mode checkpoints and retain per-example predictions and run metadata.
+- Evaluate OCR, retrieval, simplification fidelity, and document prompt injection.

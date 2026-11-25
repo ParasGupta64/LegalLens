@@ -3,6 +3,7 @@ app.py - LegalLens
 """
 
 import json
+from html import escape
 import os
 import sys
 
@@ -14,6 +15,7 @@ from PIL import Image
 import streamlit as st
 import torch
 
+from ui_formatting import _escape_html, _md_to_html
 from multilingual_judgebert import load_checkpoint, predict_single_pair
 from legal_simplifier import (
     generate_simplified_clause,
@@ -234,7 +236,7 @@ def on_preset_change():
     st.session_state.context_val = p["context"]
     st.session_state.orig_val = p["original"]
     st.session_state.simp_val = p["simplified"]
-    _lang_code_to_display = {"en": "English", "hi": "\u0939\u093f\u0928\u094d\u0926\u0940", "pa": "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40"}
+    _lang_code_to_display = {"en": "English", "hi": "\u0939\u093f\u0928\u094d\u0926\u0940"}
     st.session_state.lang_select = _lang_code_to_display.get(p["lang"], "English")
     st.session_state.eval_mode_select = "context_aware" if p["context"].strip() else "sentence_only"
     st.session_state.finder_matches = []
@@ -246,7 +248,7 @@ def on_document_upload_change():
     uploaded_file = st.session_state.get("doc_image_uploader")
     if uploaded_file is not None:
         lang_display = st.session_state.get("lang_select", "English")
-        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi", "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40": "pa"}
+        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
         lang_code = _lang_map.get(lang_display, "en")
         ok, ocr_result, msg = extract_text_from_document_image(uploaded_file, lang=lang_code)
         if ok and ocr_result.strip():
@@ -269,7 +271,7 @@ def generate_ai_simplified_clause_callback():
         return
 
     lang_display = st.session_state.get("lang_select", "English")
-    _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi", "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40": "pa"}
+    _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
     lang_code = _lang_map.get(lang_display, "en")
     context = st.session_state.get("context_val", "")
 
@@ -292,7 +294,7 @@ def extract_ocr_callback():
     uploaded_file = st.session_state.get("doc_image_uploader")
     if uploaded_file is not None:
         lang_display = st.session_state.get("lang_select", "English")
-        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi", "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40": "pa"}
+        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
         lang_code = _lang_map.get(lang_display, "en")
         ok, ocr_result, msg = extract_text_from_document_image(uploaded_file, lang=lang_code)
         if ok and ocr_result.strip():
@@ -557,8 +559,8 @@ def render_chat_page():
                 f"""
                 <div class="doc-card">
                   <div class="doc-card-title">Loaded Document</div>
-                  <div class="doc-name">📄 {doc_name}</div>
-                  <div class="doc-meta">Type: {ext} &nbsp;|&nbsp; Size: {size_str}</div>
+                  <div class="doc-name">📄 {escape(doc_name)}</div>
+                  <div class="doc-meta">Type: {escape(ext)} &nbsp;|&nbsp; Size: {escape(size_str)}</div>
                   <div class="doc-meta">Words: {word_count:,} &nbsp;|&nbsp; Chunks: {chunk_count}</div>
                   <div style="margin-top:8px;"><span class="doc-status-ok">✓ Ready to chat</span></div>
                 </div>
@@ -781,43 +783,6 @@ def render_chat_page():
                 unsafe_allow_html=True,
             )
 
-
-
-def _escape_html(text: str) -> str:
-    """Escape HTML special characters in user messages."""
-    return (
-        text.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("\n", "<br>")
-    )
-
-
-def _md_to_html(text: str) -> str:
-    """Minimal Markdown → HTML for chat bubbles (bold, italic, line breaks)."""
-    import re as _re
-    # Bold
-    text = _re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-    # Italic
-    text = _re.sub(r"\*(.+?)\*", r"<em>\1</em>", text)
-    # Inline code
-    text = _re.sub(r"`(.+?)`", r"<code>\1</code>", text)
-    # Blockquote
-    lines = text.split("\n")
-    result = []
-    for line in lines:
-        if line.startswith("> "):
-            result.append(f"<blockquote style='border-left:3px solid #2563eb; "
-                          f"padding-left:8px; margin:4px 0; color:#94a3b8;'>"
-                          f"{line[2:]}</blockquote>")
-        else:
-            result.append(line)
-    text = "\n".join(result)
-    # Newlines
-    text = text.replace("\n", "<br>")
-    return text
-
-
 def main():
     # ── Sidebar navigation ──────────────────────────────────────────────
     with st.sidebar:
@@ -878,8 +843,17 @@ def main():
         )
         return
 
-    with st.spinner("⚖️ Loading LegalLens evaluation engine and model weights..."):
-        model, tokenizer, default_mode, device = get_model(ckpt_dir)
+    try:
+        with st.spinner("⚖️ Loading LegalLens evaluation engine and model weights..."):
+            model, tokenizer, default_mode, device = get_model(ckpt_dir)
+    except (OSError, ValueError, RuntimeError) as exc:
+        st.error(f"Could not load the evaluation model: {exc}")
+        st.info("Run git lfs pull and ensure the encoder is available locally or through Hugging Face.")
+        return
+
+    st.warning("This model is unvalidated and can miss changes to legal obligations. Review every result against the original text.")
+    if default_mode == "sentence_only":
+        st.caption("The loaded checkpoint was saved in sentence-only mode; context-aware performance is unverified.")
 
     tab1, tab2 = st.tabs(["🔍 Live Legal Evaluator", "📊 Experiments & Benchmark Results"])
 
@@ -900,10 +874,10 @@ def main():
             with c1:
                 lang_display = st.selectbox(
                     "Language",
-                    options=["English", "\u0939\u093f\u0928\u094d\u0926\u0940", "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40"],
+                    options=["English", "\u0939\u093f\u0928\u094d\u0926\u0940"],
                     key="lang_select",
                 )
-                _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi", "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40": "pa"}
+                _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
                 lang = _lang_map.get(lang_display, "en")
             with c2:
                 eval_mode = st.selectbox(
@@ -1161,6 +1135,9 @@ def main():
         summary_path = os.path.join("predictions", "experiment_results_summary.json")
         cases_path = os.path.join("predictions", "experiment_5_error_case_studies.json")
 
+        if not os.path.exists(summary_path):
+            st.info("No measured experiment results are available. Run the experiment pipeline to generate them.")
+
         if os.path.exists(summary_path):
             with open(summary_path, "r", encoding="utf-8") as f:
                 summary = json.load(f)
@@ -1180,11 +1157,11 @@ def main():
                 rows.append({"Model / Split": b2.get("model", "TF-IDF"), "Pearson r": b2.get("pearson_r", 0.0), "RMSE": b2.get("rmse", 0.0), "Decision Acc": "N/A"})
             if "sentence_only" in exp3:
                 s = exp3["sentence_only"]
-                s_acc = s.get("decision_accuracy", s.get("acc", 0.0))
+                s_acc = s.get("decision_accuracy", s.get("decision_acc", s.get("acc", 0.0)))
                 rows.append({"Model / Split": "LegalLens (Sentence-Only)", "Pearson r": s.get("pearson_r", 0.0), "RMSE": s.get("rmse", 0.0), "Decision Acc": f"{s_acc*100:.1f}%"})
             if "context_aware" in exp3:
                 c = exp3["context_aware"]
-                c_acc = c.get("decision_accuracy", c.get("acc", 0.0))
+                c_acc = c.get("decision_accuracy", c.get("decision_acc", c.get("acc", 0.0)))
                 rows.append({"Model / Split": "LegalLens (Context-Aware)", "Pearson r": c.get("pearson_r", 0.0), "RMSE": c.get("rmse", 0.0), "Decision Acc": f"{c_acc*100:.1f}%"})
             
             e = exp2.get("english_subcorpus", exp2.get("english", {}))
@@ -1203,14 +1180,19 @@ def main():
                 st.markdown("### Experiment 4: Sanity Checks (Identical vs. Unrelated Pairs)")
                 id_info = exp4.get("identical_pairs_sanity", {})
                 un_info = exp4.get("unrelated_pairs_sanity", {})
-                id_mean = id_info.get("mean_predicted_score", exp4.get("identical_mean_pred", 7.62))
-                un_mean = un_info.get("mean_predicted_score", exp4.get("unrelated_mean_pred", 4.39))
+                id_mean = id_info.get("mean_predicted_score", exp4.get("identical_mean_pred"))
+                un_mean = un_info.get("mean_predicted_score", exp4.get("unrelated_mean_pred"))
 
-                sc1, sc2, sc3, sc4 = st.columns(4)
-                sc1.metric("LegalLens Identical Mean", f"{id_mean:.2f} / 10.0", "Target: 10.0")
-                sc2.metric("LegalLens Unrelated Mean", f"{un_mean:.2f} / 10.0", "Target: 1.0 (Low)")
-                sc3.metric("Generic SBERT Identical", "8.90 / 10.0", "Target: 10.0")
-                sc4.metric("Generic SBERT Unrelated", "7.80 / 10.0", "Fails Sanity Check", delta_color="inverse")
+                sc1, sc2 = st.columns(2)
+                sc1.metric("LegalLens Identical Mean", f"{id_mean:.2f} / 10.0" if id_mean is not None else "Not measured", "Target: 10.0")
+                sc2.metric("LegalLens Unrelated Mean", f"{un_mean:.2f} / 10.0" if un_mean is not None else "Not measured", "Target: 1.0 (Low)")
+                for label, key in (
+                    ("Generic SBERT Identical", "generic_sbert_identical_mean"),
+                    ("Generic SBERT Unrelated", "generic_sbert_unrelated_mean"),
+                ):
+                    value = exp4.get(key)
+                    if value is not None:
+                        st.metric(label, f"{value:.2f} / 10.0")
 
         if os.path.exists(cases_path):
             with open(cases_path, "r", encoding="utf-8") as f:

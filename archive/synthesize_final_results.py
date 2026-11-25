@@ -7,6 +7,13 @@ Synthesizes the completed experimental results and generates:
 4. deliverables/Presentation_Slides.md (Slide Deck for Project Presentation)
 """
 
+if __name__ == "__main__":
+    raise SystemExit(
+        "Archived: this script contains hard-coded, unverified research claims. "
+        "Use article_src/src/run_all_experiments.py for measured results."
+    )
+
+
 import json
 import os
 

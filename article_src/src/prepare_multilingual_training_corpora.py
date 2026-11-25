@@ -2,7 +2,7 @@
 prepare_multilingual_training_corpora.py
 Scales the JUDGEBERT training corpus preparation pipeline for Multilingual_JUDGE.
 Handles:
-- Train / Dev / Test 60-10-30 stratified splits across languages and domains.
+- Train / Dev / Test approximately 60-10-30 source-grouped splits across languages and domains.
 - Data Augmentation with multilingual identical pairs (Score 10.0) and unrelated pairs (Score 1.0).
 - Sanity Check Holdout sets (holdout_identical_Multilingual_JUDGE.jsonl and holdout_unrelated_Multilingual_JUDGE.jsonl).
 - Preserves context_text for Context-Aware vs. Sentence-Only comparative experiments.
@@ -12,7 +12,6 @@ import json
 import os
 import random
 
-from datasets import Dataset, DatasetDict, concatenate_datasets
 
 SEED = 42
 random.seed(SEED)
@@ -28,29 +27,37 @@ def load_multilingual_raw_dataset(filepath: str) -> list:
 
 
 def create_stratified_splits(records: list, seed: int = 42):
-    random.seed(seed)
-    
-    # Stratify by language and domain
+    """Keep all variants of an original clause in one partition.
+
+    shortcut: no translation/document identifiers exist; add document grouping
+    when provenance is available before claiming cross-document transfer.
+    """
+    rng = random.Random(seed)
+    groups = {}
+    for record in records:
+        original = " ".join(record["original_text"].casefold().split())
+        groups.setdefault(original, []).append(record)
+
     buckets = {}
-    for r in records:
-        key = (r["language"], r["domain"])
-        buckets.setdefault(key, []).append(r)
-        
+    for group in groups.values():
+        first = group[0]
+        buckets.setdefault((first["language"], first["domain"]), []).append(group)
+
     train_list, dev_list, test_list = [], [], []
-    for key, group in buckets.items():
-        random.shuffle(group)
-        n = len(group)
-        n_train = int(n * 0.60)
-        n_dev = int(n * 0.10)
-        
-        train_list.extend(group[:n_train])
-        dev_list.extend(group[n_train:n_train + n_dev])
-        test_list.extend(group[n_train + n_dev:])
-        
-    random.shuffle(train_list)
-    random.shuffle(dev_list)
-    random.shuffle(test_list)
-    
+    for bucket in buckets.values():
+        rng.shuffle(bucket)
+        n = len(bucket)
+        n_train = max(1, int(n * 0.60))
+        n_dev = max(1, int(n * 0.10)) if n >= 3 else 0
+        for destination, partition in (
+            (train_list, bucket[:n_train]),
+            (dev_list, bucket[n_train:n_train + n_dev]),
+            (test_list, bucket[n_train + n_dev:]),
+        ):
+            destination.extend(record for group in partition for record in group)
+
+    for partition in (train_list, dev_list, test_list):
+        rng.shuffle(partition)
     return train_list, dev_list, test_list
 
 
@@ -88,8 +95,11 @@ def create_unrelated_augmentation(records: list) -> list:
         # Pick another record from a different domain or far away index
         candidates = [c for c in pool if c["domain"] != r["domain"]]
         if not candidates:
-            candidates = [c for c in pool if c["pair_id"] != r["pair_id"]]
+            candidates = [c for c in pool if c["original_text"].strip().casefold() != r["original_text"].strip().casefold()]
         
+        candidates = [c for c in candidates if c["original_text"].strip().casefold() != r["original_text"].strip().casefold()]
+        if not candidates:
+            continue
         chosen = random.choice(candidates)
         
         unrelated_pairs.append({

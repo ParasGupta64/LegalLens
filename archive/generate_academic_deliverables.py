@@ -6,6 +6,13 @@ Generates the 3 mandatory final deliverables required by Dr. Surabhi Solanki's r
 3. Professional Presentation Slides in PowerPoint (.pptx)
 """
 
+if __name__ == "__main__":
+    raise SystemExit(
+        "Archived: this script contains hard-coded, unverified research claims. "
+        "Use article_src/src/run_all_experiments.py for measured results."
+    )
+
+
 import json
 import os
 import docx
