@@ -256,15 +256,33 @@ def generate_simplified_clause(
     # Look for OpenAI API key
     key = api_key or os.environ.get("OPENAI_API_KEY")
     if not key:
-        env_dict = dotenv_values(".env")
-        key = env_dict.get("OPENAI_API_KEY")
+        candidates = [
+            ".env",
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".env"),
+            os.path.join(os.getcwd(), ".env"),
+            r"C:\Users\PARAS\OneDrive\Desktop\NLP_Project\JUDGEBERT\.env",
+            r"C:\Users\PARAS\JUDGEBERT\.env",
+        ]
+        for env_path in candidates:
+            if os.path.exists(env_path):
+                env_dict = dotenv_values(env_path)
+                key = env_dict.get("OPENAI_API_KEY")
+                if key:
+                    break
 
     if key:
         try:
             import openai
             client = openai.OpenAI(api_key=key)
-            target_lang_str = "Hindi" if lang == "hi" else "English"
-            script_str = "Write in fluent Hindi using Devanagari script" if lang == "hi" else "Write in plain English"
+            if lang == "hi":
+                target_lang_str = "Hindi"
+                script_str = "Write in fluent Hindi using Devanagari script"
+            elif lang == "pa":
+                target_lang_str = "Punjabi"
+                script_str = "Write in fluent Punjabi using Gurmukhi script"
+            else:
+                target_lang_str = "English"
+                script_str = "Write in plain English"
 
             user_msg = f"Original Legal Clause to Simplify:\n{original_text}"
             if context.strip():
@@ -608,3 +626,79 @@ def find_matching_clauses(document_text: str, query: str) -> List[Dict]:
     # Sort descending by score
     matches.sort(key=lambda x: x["score"], reverse=True)
     return matches
+
+
+
+def extract_text_from_document(doc_input, lang: str = "en", filename: str = "") -> Tuple[bool, str, str]:
+    """
+    Unified extractor for legal documents supporting PDF, DOCX, and images (PNG, JPG, JPEG).
+    Extracts embedded text when available and applies multi-engine OCR (Windows OCR / WinRT / Tesseract)
+    for scanned documents or image inputs.
+    """
+    # 1. Check if doc_input is an image or image-like
+    if isinstance(doc_input, Image.Image):
+        return extract_text_from_document_image(doc_input, lang=lang)
+
+    fname = filename
+    if not fname and hasattr(doc_input, "name") and doc_input.name:
+        fname = doc_input.name
+    elif not fname and isinstance(doc_input, (str, os.PathLike)):
+        fname = str(doc_input)
+    fname_lower = fname.lower().strip()
+
+    # 2. Check if file is PDF
+    if fname_lower.endswith(".pdf"):
+        # First attempt native text extraction via pypdf
+        try:
+            import pypdf
+            from io import BytesIO
+
+            raw = None
+            if hasattr(doc_input, "seek"):
+                doc_input.seek(0)
+                raw = doc_input.read()
+            elif isinstance(doc_input, (bytes, bytearray)):
+                raw = bytes(doc_input)
+            elif isinstance(doc_input, (str, os.PathLike)) and os.path.exists(doc_input):
+                with open(doc_input, "rb") as f:
+                    raw = f.read()
+
+            if raw:
+                reader = pypdf.PdfReader(BytesIO(raw))
+                extracted_pages = []
+                scanned_pages = []
+                for p_idx, page in enumerate(reader.pages, start=1):
+                    p_txt = page.extract_text() or ""
+                    if p_txt.strip():
+                        extracted_pages.append(f"[Page {p_idx}]\n{p_txt.strip()}")
+                    else:
+                        # Check if page has embedded images to OCR
+                        ocr_found = False
+                        if hasattr(page, "images") and page.images:
+                            for img_obj in page.images:
+                                try:
+                                    pil_img = Image.open(BytesIO(img_obj.data))
+                                    s_ok, s_txt, _ = extract_text_from_document_image(pil_img, lang=lang)
+                                    if s_ok and s_txt.strip():
+                                        extracted_pages.append(f"[Page {p_idx} - OCR]\n{s_txt.strip()}")
+                                        ocr_found = True
+                                        break
+                                except Exception:
+                                    pass
+                        if not ocr_found:
+                            scanned_pages.append(p_idx)
+
+                if extracted_pages:
+                    full_text = "\n\n".join(extracted_pages)
+                    return True, full_text, f"Extracted text from {len(extracted_pages)} PDF pages."
+                elif scanned_pages:
+                    return False, "", f"PDF appears to be scanned (pages {scanned_pages}). No embedded text found."
+        except Exception as e:
+            pass
+
+    # 3. Check if file is image (png, jpg, jpeg)
+    if fname_lower.endswith((".png", ".jpg", ".jpeg")):
+        return extract_text_from_document_image(doc_input, lang=lang)
+
+    # 4. Fallback: try extract_text_from_document_image directly
+    return extract_text_from_document_image(doc_input, lang=lang)

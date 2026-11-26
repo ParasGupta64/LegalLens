@@ -18,7 +18,9 @@ venv/
 *.py[cod]
 .env.*
 !.env.example
-/predictions/
+# Benchmark prediction files allowed
+!/predictions/
+!/predictions/*.json
 /deliverables/
 /datastore/released/Multilingual_JUDGE.jsonl
 /datastore/training/*Multilingual_JUDGE*.jsonl

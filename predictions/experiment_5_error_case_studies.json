@@ -1,0 +1,403 @@
+[
+  {
+    "case_number": 1,
+    "pair_id": "EN_CONT_001",
+    "language": "en",
+    "domain": "contract",
+    "context": "MASTER SERVICES AGREEMENT - Section 11.2 (Confidentiality Obligations): Each party agrees that all code, inventions, and business information disclosed during the term shall be held in strict confidence.",
+    "original_clause": "The Receiving Party shall hold and maintain the Confidential Information in strictest confidence for the sole and exclusive benefit of the Disclosing Party.",
+    "simplified_clause": "The Receiving Party must keep the Confidential Information completely private and use it only for the benefit of the Disclosing Party.",
+    "generic_sbert_score": 7.95,
+    "human_ground_truth": {
+      "lmp_score": 9.8,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "Legal meaning, strict duty ('must' matches 'shall'), and sole benefit restriction are fully preserved without distortion."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.06,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "omission"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 5.1/10). Possible issues: an omission of material legal safeguards or limiting terms. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 2,
+    "pair_id": "EN_CONT_002",
+    "language": "en",
+    "domain": "contract",
+    "context": "COMMERCIAL LEASE AGREEMENT - Section 4.1 (Rent and Late Penalties): Rent is payable on the first day of each calendar month at the landlord's designated office.",
+    "original_clause": "Tenant covenants and agrees to pay to Landlord as basic annual rent the sum of Sixty Thousand Dollars ($60,000), payable in equal monthly installments of Five Thousand Dollars ($5,000) on the first day of each month.",
+    "simplified_clause": "The tenant agrees to pay the landlord an annual rent of $60,000, broken down into twelve monthly payments of $5,000 due on the first day of every month.",
+    "generic_sbert_score": 8.55,
+    "human_ground_truth": {
+      "lmp_score": 9.7,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "Payment schedule, total consideration, monthly amounts, and due dates are accurately simplified without legal variance."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 6.19,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "omission"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 6.2/10). Possible issues: an omission of material legal safeguards or limiting terms. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 3,
+    "pair_id": "EN_CONT_003",
+    "language": "en",
+    "domain": "contract",
+    "context": "SOFTWARE LICENSE AGREEMENT - Section 8.3 (Intellectual Property Warranty): Vendor warrants that the Deliverables do not infringe any third-party patent or copyright.",
+    "original_clause": "Licensor warrants that the Software does not and will not infringe, misappropriate, or violate any third party's patent, copyright, trademark, or trade secret rights.",
+    "simplified_clause": "The licensor guarantees that the software does not violate any other party's patents, copyrights, trademarks, or trade secrets.",
+    "generic_sbert_score": 9.18,
+    "human_ground_truth": {
+      "lmp_score": 9.5,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "All four intellectual property categories and the full scope of warranty are preserved."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.02,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 5.0/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 4,
+    "pair_id": "EN_CONT_004",
+    "language": "en",
+    "domain": "contract",
+    "context": "EMPLOYMENT AGREEMENT - Section 6.2 (Non-Solicitation): Employee agrees not to solicit clients or staff following separation.",
+    "original_clause": "For a period of twenty-four (24) months following termination, Employee shall not directly solicit any current client of the Employer.",
+    "simplified_clause": "For two years after leaving the company, the employee must not contact or pitch business directly to any existing clients of the employer.",
+    "generic_sbert_score": 7.38,
+    "human_ground_truth": {
+      "lmp_score": 9.3,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "24-month duration (2 years), direct solicitation ban, and client scope are accurately mapped."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 4.03,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "contradiction",
+        "omission",
+        "scope_shift"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 4.0/10). Possible issues: a direct contradiction of legal meaning or entitlement, an omission of material legal safeguards or limiting terms, an expansion or restriction of legal applicability / covered parties. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 5,
+    "pair_id": "EN_CONT_005",
+    "language": "en",
+    "domain": "contract",
+    "context": "INDEMNIFICATION AGREEMENT - Section 3.1 (Third Party Claims): Indemnitor agrees to defend Indemnitee against third-party lawsuits arising out of negligence.",
+    "original_clause": "Indemnitor shall defend, indemnify, and hold harmless Indemnitee from and against all liabilities, damages, and costs resulting from any third-party claim alleging Indemnitor's gross negligence.",
+    "simplified_clause": "The indemnitor must protect, defend, and pay for any damages or expenses incurred by the indemnitee if a third party sues due to the indemnitor's gross negligence.",
+    "generic_sbert_score": 8.3,
+    "human_ground_truth": {
+      "lmp_score": 9.4,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "Duty to defend and indemnify and the standard of gross negligence remain legally intact."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.76,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.8/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 6,
+    "pair_id": "HI_CONT_001",
+    "language": "hi",
+    "domain": "contract",
+    "context": "वाणिज्यिक पट्टा अनुबंध - खंड 5.1 (किराया भुगतान एवं देय तिथि): प्रत्येक अंग्रेजी कैलेंडर माह की पहली तारीख को मासिक किराया अग्रिम रूप में देय होगा।",
+    "original_clause": "किरायेदार प्रत्येक माह की प्रथम तिथि को या उससे पूर्व पचास हजार रुपये (₹50,000) की मासिक दर से मकान मालिक को देय किराया बैंक अंतरण द्वारा अदा करने के लिए बाध्य होगा।",
+    "simplified_clause": "किरायेदार को हर महीने की 1 तारीख तक ₹50,000 का किराया बैंक ट्रांसफर के जरिए मकान मालिक को देना होगा।",
+    "generic_sbert_score": 8.58,
+    "human_ground_truth": {
+      "lmp_score": 9.8,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "किरायेदार की कानूनी बाध्यता ('बाध्य होगा' -> 'देना होगा'), राशि (₹50,000), भुगतान माध्यम और देय तिथि पूरी तरह संरक्षित हैं।"
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.65,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "omission",
+        "contradiction",
+        "scope_shift"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.7/10). Possible issues: an omission of material legal safeguards or limiting terms, a direct contradiction of legal meaning or entitlement, an expansion or restriction of legal applicability / covered parties. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 7,
+    "pair_id": "HI_CONT_002",
+    "language": "hi",
+    "domain": "contract",
+    "context": "गोपनीयता समझौता (NDA) - खंड 3.2 (गोपनीय सूचना का प्रकटीकरण): प्राप्तकर्ता पक्ष किसी भी अनाधिकृत तृतीय पक्ष को गोपनीय सामग्री प्रकट नहीं करेगा।",
+    "original_clause": "प्राप्तकर्ता पक्ष यह वचन देता है कि वह प्रकटीकरणकर्ता पक्ष की पूर्व लिखित सहमति के बिना किसी भी गोपनीय जानकारी को किसी तृतीय पक्ष को प्रकट नहीं करेगा।",
+    "simplified_clause": "सूचना पाने वाला पक्ष बिना लिखित अनुमति के किसी तीसरे व्यक्ति को गोपनीय बातें नहीं बताएगा।",
+    "generic_sbert_score": 8.51,
+    "human_ground_truth": {
+      "lmp_score": 9.6,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "पूर्व लिखित सहमति की शर्त और तृतीय पक्ष प्रकटीकरण पर रोक का कानूनी अर्थ बिना किसी बदलाव के सरल हुआ है।"
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.07,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 5.1/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 8,
+    "pair_id": "HI_CONT_003",
+    "language": "hi",
+    "domain": "contract",
+    "context": "सॉफ्टवेयर विकास अनुबंध - खंड 8.3 (बौद्धिक संपदा का हस्तांतरण): अनुबंध के तहत विकसित समस्त कोड ग्राहक की अनन्य संपत्ति होगी।",
+    "original_clause": "विकासकर्ता द्वारा इस समझौते के अधीन तैयार किए गए समस्त सॉफ़्टवेयर कोड, डिज़ाइन तथा संबंधित प्रलेखों पर संपूर्ण स्वामित्व अधिकार ग्राहक को हस्तांतरित होंगे।",
+    "simplified_clause": "इस अनुबंध के तहत डेवलपर द्वारा बनाए गए सभी सॉफ्टवेयर, डिजाइन और दस्तावेजों का पूरा मालिकाना हक ग्राहक का होगा।",
+    "generic_sbert_score": 8.52,
+    "human_ground_truth": {
+      "lmp_score": 9.7,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "स्वामित्व हस्तांतरण का दायरा और सभी मदें (कोड, डिजाइन, दस्तावेज) कानूनी रूप से सही ढंग से संरक्षित हैं।"
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 6.99,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 7.0/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 9,
+    "pair_id": "HI_CONT_004",
+    "language": "hi",
+    "domain": "contract",
+    "context": "रोजगार अनुबंध - खंड 7.1 (अनाधिकृत प्रतिस्पर्धा निषेध): सेवा समाप्ति के उपरांत प्रतिस्पर्धी व्यापार पर प्रतिबंध।",
+    "original_clause": "कर्मचारी सेवा समाप्ति की तिथि से बारह (12) माह की अवधि तक नियोक्ता के किसी प्रत्यक्ष प्रतिस्पर्धी संस्थान में कार्य स्वीकार नहीं करेगा।",
+    "simplified_clause": "नौकरी खत्म होने के बाद 1 साल तक कर्मचारी कंपनी के सीधे प्रतिस्पर्धियों के साथ काम नहीं करेगा।",
+    "generic_sbert_score": 7.99,
+    "human_ground_truth": {
+      "lmp_score": 9.5,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "12 महीने (1 वर्ष) की समयावधि, प्रत्यक्ष प्रतिस्पर्धी का दायरा और निषेधात्मक शर्त कानूनी रूप से सुरक्षित हैं।"
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 4.88,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "omission",
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 4.9/10). Possible issues: an omission of material legal safeguards or limiting terms, a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 10,
+    "pair_id": "HI_CONT_005",
+    "language": "hi",
+    "domain": "contract",
+    "context": "क्षतिपूर्ति अनुबंध - खंड 10.2 (नुकसान की भरपाई): लापरवाही के कारण उत्पन्न दावों की प्रतिपूर्ति।",
+    "original_clause": "यदि विक्रेता की गंभीर लापरवाही के कारण क्रेता को कोई कानूनी क्षति होती है, तो विक्रेता क्रेता को संपूर्ण हर्जाना अदा करेगा।",
+    "simplified_clause": "अगर विक्रेता की बड़ी लापरवाही से खरीदार को नुकसान होता है, तो विक्रेता उस नुकसान की पूरी भरपाई करेगा।",
+    "generic_sbert_score": 8.29,
+    "human_ground_truth": {
+      "lmp_score": 9.4,
+      "decision": "Preserved",
+      "error_types": [
+        "none"
+      ],
+      "human_explanation": "गंभीर लापरवाही का कानूनी मानक और संपूर्ण हर्जाने की बाध्यता यथावत है।"
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.52,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.5/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 11,
+    "pair_id": "EN_CONT_006",
+    "language": "en",
+    "domain": "contract",
+    "context": "SUPPLY AGREEMENT - Section 14.4 (Termination for Cause): Either party may terminate upon material breach if uncured within the designated cure window.",
+    "original_clause": "Either party may terminate this Agreement immediately upon written notice if the other party breaches any material term and fails to cure such breach within thirty (30) days of receipt of written notice.",
+    "simplified_clause": "A party can terminate the agreement if the other party commits a serious breach and does not fix it within a month.",
+    "generic_sbert_score": 8.61,
+    "human_ground_truth": {
+      "lmp_score": 7.2,
+      "decision": "Partially Preserved",
+      "error_types": [
+        "dates_numbers_shift",
+        "omission"
+      ],
+      "human_explanation": "Replacing '30 days upon receipt of written notice' with 'within a month' introduces minor ambiguity regarding calendar vs business days and drops the formal receipt condition."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.89,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.9/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 12,
+    "pair_id": "EN_CONT_007",
+    "language": "en",
+    "domain": "contract",
+    "context": "NON-DISCLOSURE AGREEMENT - Section 2.3 (Exclusions from Confidentiality): Information publicly known through no breach shall not be deemed confidential.",
+    "original_clause": "Confidential Information shall not include information that is or becomes publicly known through no breach of this Agreement by the Receiving Party.",
+    "simplified_clause": "Confidential information does not include any information that is widely known to the public.",
+    "generic_sbert_score": 7.48,
+    "human_ground_truth": {
+      "lmp_score": 6.8,
+      "decision": "Partially Preserved",
+      "error_types": [
+        "condition_shift",
+        "scope_shift"
+      ],
+      "human_explanation": "Omits the essential qualifying condition 'through no breach of this Agreement by the Receiving Party', allowing unauthorized leaks to technically remove confidentiality."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.5,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "omission"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.5/10). Possible issues: an omission of material legal safeguards or limiting terms. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 13,
+    "pair_id": "EN_CONT_008",
+    "language": "en",
+    "domain": "contract",
+    "context": "SAAS SUBSCRIPTION AGREEMENT - Section 9.1 (Service Level Agreement): Uptime commitments and planned maintenance windows.",
+    "original_clause": "Vendor guarantees 99.9% system availability per calendar month, excluding scheduled maintenance windows announced at least 48 hours in advance.",
+    "simplified_clause": "The provider guarantees 99.9% uptime every month, not counting routine maintenance periods.",
+    "generic_sbert_score": 7.68,
+    "human_ground_truth": {
+      "lmp_score": 6.5,
+      "decision": "Partially Preserved",
+      "error_types": [
+        "condition_shift",
+        "omission"
+      ],
+      "human_explanation": "Drops the mandatory 48-hour prior notification prerequisite for maintenance exceptions."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.22,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "omission",
+        "contradiction",
+        "scope_shift"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 5.2/10). Possible issues: an omission of material legal safeguards or limiting terms, a direct contradiction of legal meaning or entitlement, an expansion or restriction of legal applicability / covered parties. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 14,
+    "pair_id": "EN_CONT_009",
+    "language": "en",
+    "domain": "contract",
+    "context": "DISTRIBUTION AGREEMENT - Section 5.2 (Territory and Exclusivity): Territory covers specified geographic regions.",
+    "original_clause": "Distributor shall have the exclusive right to market and sell the Products within the Territory, comprising the United Kingdom, France, and Germany.",
+    "simplified_clause": "The distributor is the only authorized seller of the products across Western Europe.",
+    "generic_sbert_score": 6.69,
+    "human_ground_truth": {
+      "lmp_score": 5.8,
+      "decision": "Partially Preserved",
+      "error_types": [
+        "scope_shift"
+      ],
+      "human_explanation": "Expands geographic scope from three specified countries (UK, France, Germany) to 'Western Europe'."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 5.13,
+      "predicted_decision": "Not Preserved",
+      "diagnosed_error_types": [
+        "contradiction"
+      ],
+      "automated_explanation": "Model prediction: Not Preserved (LMP: 5.1/10). Possible issues: a direct contradiction of legal meaning or entitlement. Review against the original clause."
+    }
+  },
+  {
+    "case_number": 15,
+    "pair_id": "EN_CONT_010",
+    "language": "en",
+    "domain": "contract",
+    "context": "LOAN AGREEMENT - Section 7.3 (Events of Default): Lender remedies upon late repayment or insolvency.",
+    "original_clause": "Upon any Event of Default, Lender may declare the entire unpaid principal balance together with accrued interest immediately due and payable.",
+    "simplified_clause": "If a default happens, the lender will ask for all the loan money back right away.",
+    "generic_sbert_score": 5.9,
+    "human_ground_truth": {
+      "lmp_score": 6.2,
+      "decision": "Partially Preserved",
+      "error_types": [
+        "obligation_shift",
+        "omission"
+      ],
+      "human_explanation": "Changes discretionary right ('may declare') into an automatic obligation ('will ask') and omits accrued interest."
+    },
+    "judgebert_prediction": {
+      "predicted_lmp_score": 6.41,
+      "predicted_decision": "Partially Preserved",
+      "diagnosed_error_types": [
+        "omission"
+      ],
+      "automated_explanation": "Model prediction: Partially Preserved (LMP: 6.4/10). Possible issues: an omission of material legal safeguards or limiting terms. Review against the original clause."
+    }
+  }
+]

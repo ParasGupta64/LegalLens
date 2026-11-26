@@ -253,16 +253,19 @@ def run_experiment_2_and_3(
             }
             print(f"Domain: {dom.capitalize():<10} (N={len(dom_records)}) -> Pearson r: {m['pearson_r']:.4f} | RMSE: {m['rmse']:.4f} | Acc: {m['decision_acc']*100:.1f}%", flush=True)
 
+
     return {
         "model_sent": model_sent,
         "model_ctx": model_ctx,
         "tokenizer": tokenizer,
         "metrics_sent": metrics_sent,
         "metrics_ctx": metrics_ctx,
+        "language_metrics": language_metrics,
         "en_metrics": en_metrics,
         "hi_metrics": hi_metrics,
         "domain_results": domain_results,
     }
+
 
 
 def run_experiment_4_sanity_checks(

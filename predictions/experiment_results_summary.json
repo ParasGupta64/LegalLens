@@ -1,0 +1,104 @@
+{
+  "project_title": "LegalLens: Context-Aware Legal Meaning Preservation",
+  "course": "CSET 346 – Natural Language Processing",
+  "instructor": "Dr. Surabhi Solanki",
+  "experiment_1_baseline_vs_judgebert": {
+    "generic_sbert_baseline": {
+      "model": "Baseline 1: Generic Pretrained SBERT (Cosine Similarity)",
+      "rmse": 2.9716,
+      "mae": 2.278,
+      "pearson_r": 0.6568,
+      "spearman_rho": 0.5772,
+      "mean_predicted_score": 6.74,
+      "mean_ground_truth": 5.21
+    },
+    "lexical_tfidf_baseline": {
+      "model": "Baseline 2: Lexical TF-IDF Char N-gram Similarity",
+      "rmse": 3.2095,
+      "mae": 2.8447,
+      "pearson_r": 0.4739,
+      "spearman_rho": 0.4661,
+      "mean_predicted_score": 3.91,
+      "mean_ground_truth": 5.21
+    },
+    "multilingual_judgebert": {
+      "rmse": 3.2174,
+      "mae": 2.8612,
+      "pearson_r": 0.2471,
+      "spearman_rho": 0.0122,
+      "decision_acc": 0.3986,
+      "decision_macro_f1": 0.2866
+    }
+  },
+  "experiment_2_cross_lingual": {
+    "english": {
+      "status": "evaluated",
+      "count": 58,
+      "pearson_r": 0.4256,
+      "rmse": 2.8705,
+      "mae": 2.558,
+      "acc": 0.431
+    },
+    "hindi": {
+      "status": "evaluated",
+      "count": 76,
+      "pearson_r": 0.0899,
+      "rmse": 3.3662,
+      "mae": 2.9859,
+      "acc": 0.3816
+    },
+    "punjabi": {
+      "status": "evaluated",
+      "count": 9,
+      "pearson_r": -0.6322,
+      "rmse": 3.9607,
+      "mae": 3.7618,
+      "acc": 0.3333
+    }
+  },
+  "experiment_3_context_aware_generalization": {
+    "sentence_only": {
+      "rmse": 3.1109,
+      "mae": 2.5522,
+      "pearson_r": 0.3945,
+      "acc": 0.5874
+    },
+    "context_aware": {
+      "rmse": 3.2174,
+      "mae": 2.8612,
+      "pearson_r": 0.2471,
+      "acc": 0.3986
+    },
+    "domain_breakdown": {
+      "contract": {
+        "count": 25,
+        "pearson_r": 0.109,
+        "rmse": 3.483,
+        "acc": 0.36
+      },
+      "statute": {
+        "count": 58,
+        "pearson_r": 0.3586,
+        "rmse": 3.1761,
+        "acc": 0.5172
+      },
+      "judgment": {
+        "count": 51,
+        "pearson_r": 0.1996,
+        "rmse": 2.9728,
+        "acc": 0.2941
+      }
+    }
+  },
+  "experiment_4_sanity_checks": {
+    "generic_sbert_identical_mean": 10.0,
+    "generic_sbert_unrelated_mean": 4.2,
+    "identical_mean_pred": 5.62,
+    "identical_rmse": 4.4207,
+    "identical_pass_rate": 0.0,
+    "unrelated_mean_pred": 4.73,
+    "unrelated_rmse": 3.7694,
+    "unrelated_pass_rate": 0.0
+  },
+  "experiment_5_case_studies_count": 15
+}

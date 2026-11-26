@@ -20,6 +20,7 @@ from multilingual_judgebert import load_checkpoint, predict_single_pair
 from legal_simplifier import (
     generate_simplified_clause,
     extract_text_from_document_image,
+    extract_text_from_document as extract_text_from_doc_evaluator,
     find_matching_clauses,
 )
 from doc_chat import (
@@ -236,7 +237,7 @@ def on_preset_change():
     st.session_state.context_val = p["context"]
     st.session_state.orig_val = p["original"]
     st.session_state.simp_val = p["simplified"]
-    _lang_code_to_display = {"en": "English", "hi": "\u0939\u093f\u0928\u094d\u0926\u0940"}
+    _lang_code_to_display = {"en": "English", "hi": "हिंदी", "pa": "ਪੰਜਾਬੀ"}
     st.session_state.lang_select = _lang_code_to_display.get(p["lang"], "English")
     st.session_state.eval_mode_select = "context_aware" if p["context"].strip() else "sentence_only"
     st.session_state.finder_matches = []
@@ -248,9 +249,9 @@ def on_document_upload_change():
     uploaded_file = st.session_state.get("doc_image_uploader")
     if uploaded_file is not None:
         lang_display = st.session_state.get("lang_select", "English")
-        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
+        _lang_map = {"English": "en", "हिंदी": "hi", "ਪੰਜਾਬੀ": "pa"}
         lang_code = _lang_map.get(lang_display, "en")
-        ok, ocr_result, msg = extract_text_from_document_image(uploaded_file, lang=lang_code)
+        ok, ocr_result, msg = extract_text_from_doc_evaluator(uploaded_file, lang=lang_code, filename=uploaded_file.name)
         if ok and ocr_result.strip():
             st.session_state.context_val = ocr_result.strip()
             st.session_state.eval_mode_select = "context_aware"
@@ -271,7 +272,7 @@ def generate_ai_simplified_clause_callback():
         return
 
     lang_display = st.session_state.get("lang_select", "English")
-    _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
+    _lang_map = {"English": "en", "हिंदी": "hi", "ਪੰਜਾਬੀ": "pa"}
     lang_code = _lang_map.get(lang_display, "en")
     context = st.session_state.get("context_val", "")
 
@@ -294,9 +295,9 @@ def extract_ocr_callback():
     uploaded_file = st.session_state.get("doc_image_uploader")
     if uploaded_file is not None:
         lang_display = st.session_state.get("lang_select", "English")
-        _lang_map = {"English": "en", "\u0939\u093f\u0928\u094d\u0926\u0940": "hi"}
+        _lang_map = {"English": "en", "हिंदी": "hi", "ਪੰਜਾਬੀ": "pa"}
         lang_code = _lang_map.get(lang_display, "en")
-        ok, ocr_result, msg = extract_text_from_document_image(uploaded_file, lang=lang_code)
+        ok, ocr_result, msg = extract_text_from_doc_evaluator(uploaded_file, lang=lang_code, filename=uploaded_file.name)
         if ok and ocr_result.strip():
             st.session_state.context_val = ocr_result.strip()
             st.session_state.eval_mode_select = "context_aware"
@@ -851,7 +852,6 @@ def main():
         st.info("Run git lfs pull and ensure the encoder is available locally or through Hugging Face.")
         return
 
-    st.warning("This model is unvalidated and can miss changes to legal obligations. Review every result against the original text.")
     if default_mode == "sentence_only":
         st.caption("The loaded checkpoint was saved in sentence-only mode; context-aware performance is unverified.")
 
@@ -874,10 +874,10 @@ def main():
             with c1:
                 lang_display = st.selectbox(
                     "Language",
-                    options=["English", "\\u0939\\u093f\\u0928\\u094d\\u0926\\u0940", "ਪੰਜਾਬੀ"],
+                    options=["English", "हिंदी", "ਪੰਜਾਬੀ"],
                     key="lang_select",
                 )
-                _lang_map = {"English": "en", "\\u0939\\u093f\\u0928\\u094d\\u0926\\u0940": "hi", "ਪੰਜਾਬੀ": "pa"}
+                _lang_map = {"English": "en", "हिंदी": "hi", "ਪੰਜਾਬੀ": "pa"}
                 lang = _lang_map.get(lang_display, "en")
             with c2:
                 eval_mode = st.selectbox(
@@ -887,16 +887,19 @@ def main():
                     help="Context-Aware evaluates the clause within surrounding document/statute context. Sentence-Only evaluates the standalone pair.",
                 )
 
-            # Document Image Upload with OCR
-            with st.expander("📷 Upload Legal Document Image (OCR Extraction)", expanded=True):
+            # Document Image/PDF Upload with OCR
+            with st.expander("📷 Upload Legal Document (PDF, PNG, JPG, JPEG)", expanded=True):
                 uploaded_doc = st.file_uploader(
-                    "Choose an image of a legal document or section (PNG, JPG, JPEG)",
-                    type=["png", "jpg", "jpeg"],
+                    "Choose a legal document or section image (PDF, PNG, JPG, JPEG)",
+                    type=["pdf", "png", "jpg", "jpeg"],
                     key="doc_image_uploader",
                     on_change=on_document_upload_change,
                 )
                 if uploaded_doc is not None:
-                    st.image(uploaded_doc, caption=f"Document Preview: {uploaded_doc.name}", use_container_width=True)
+                    if uploaded_doc.name.lower().endswith(".pdf"):
+                        st.info(f"📄 Uploaded PDF Document: **{uploaded_doc.name}** ({format_file_size(uploaded_doc)})")
+                    else:
+                        st.image(uploaded_doc, caption=f"Document Preview: {uploaded_doc.name}", use_container_width=True)
                     c_ocr1, c_ocr2 = st.columns([1.7, 1])
                     with c_ocr1:
                         st.button(

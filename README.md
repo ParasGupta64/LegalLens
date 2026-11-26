@@ -4,7 +4,7 @@
 
 LegalLens is an academic legal NLP application for comparing an original clause with a proposed simplification. It predicts a preservation score, a three-way decision, and diagnostic labels for possible changes to obligations, conditions, exceptions, and other legal details. The Streamlit interface supports English and Hindi, document chat, and image text extraction.
 
-[Research paper (PDF)](paper/LegalLens_IEEE_Paper.pdf) · [Editable paper (Word)](paper/LegalLens_IEEE_Paper.docx) · [Repository index](INDEX.md)
+[Research paper (PDF)](docs/LegalLens_IEEE_Paper.pdf) · [Project Presentation (PPTX)](docs/LegalLens_Project_Presentation.pptx) · [Editable paper (Word)](paper/LegalLens_IEEE_Paper.docx) · [Repository index](INDEX.md)
 
 ## Features
 
@@ -13,7 +13,7 @@ LegalLens is an academic legal NLP application for comparing an original clause 
 | Legal meaning comparison | Score a clause pair from 1 to 10 with an optional context window |
 | Preservation decisions | Predict Preserved, Partially Preserved, or Not Preserved |
 | Diagnostic explanations | Describe predicted changes to legal content using nine error categories |
-| Clause simplification | Generate an English or Hindi rewrite, with local substitutions as a fallback |
+| Multilingual Evaluation & Simplification | Support English, Hindi, and Punjabi legal evaluation, rewrite generation, and OCR |
 | Document chat | Retrieve passages from PDF/DOCX files and optionally generate an answer |
 | Image OCR | Extract text using compatible Windows OCR engines or Tesseract |
 
@@ -98,13 +98,27 @@ The [six-page IEEE-format paper](paper/LegalLens_IEEE_Paper.pdf) includes eight 
 
 The following figures reproduce the supplied project report. They have **not been independently reproduced** from a complete set of run artifacts in this repository.
 
-| Model / split | Pearson r | RMSE | Decision accuracy |
+### 1. Baselines & Cross-Lingual Evaluation (English, Hindi, Punjabi)
+
+| Model / Split | Pearson r | RMSE | Decision Acc | Samples |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline 1: Generic Pretrained SBERT (Cosine Similarity) | 0.6568 | 2.9716 | N/A | — |
+| Baseline 2: Lexical TF-IDF Char N-gram Similarity | 0.4739 | 3.2095 | N/A | — |
+| LegalLens (Sentence-Only) | 0.3945 | 3.1109 | 58.7% | 143 |
+| LegalLens (Context-Aware) | 0.2471 | 3.2174 | 39.9% | 143 |
+| Cross-Lingual: English Sub-Corpus | 0.4256 | 2.8705 | 43.1% | 58 |
+| Cross-Lingual: Hindi Sub-Corpus | 0.0899 | 3.3662 | 38.2% | 76 |
+| Cross-Lingual: Punjabi Sub-Corpus | -0.6322 | 3.9607 | 33.3% | 9 |
+
+### 2. Sanity Checks (Identical vs. Unrelated Sentence Pairs)
+
+| Metric | LegalLens | Generic SBERT | Target |
 | --- | ---: | ---: | ---: |
-| Generic SBERT (cosine similarity) | 0.2959 | 3.2125 | N/A |
-| LegalLens sentence-only | 0.6511 | 3.1017 | 51.0% |
-| LegalLens context-aware | 0.7676 | 2.3375 | 53.9% |
-| English sub-corpus | 0.7470 | 2.3124 | 47.1% |
-| Hindi sub-corpus | 0.7888 | 2.3623 | 60.8% |
+| Identical Pair Mean Score | 5.62 / 10.0 | 10.00 / 10.0 | ↑ 10.0 |
+| Unrelated Pair Mean Score | 4.73 / 10.0 | 4.20 / 10.0 | ↓ 1.0 (Low) |
+
+### 3. Qualitative Error Analysis (15 Case Studies)
+Detailed evaluation across 15 curated English and Hindi legal clauses spanning Contracts, Statutes, and Judgments with diagnostic error tags (`omission`, `contradiction`, `scope`, `obligation`, `dates/numbers`).
 
 The report also gives MAE 0.33 and 15/15 decision agreement on selected cases. That selected-case agreement is not generalization accuracy. The shipped sentence-only and context-aware weights reference the same Git LFS object; their directory names do not establish two separately trained models. See [evidence and limitations](INDEX.md#evidence-and-limitations) before interpreting the results.
 
@@ -112,15 +126,17 @@ The report also gives MAE 0.33 and 15/15 decision agreement on selected cases. T
 
 ```text
 LegalLens/
-├── app.py                 # Streamlit application
+├── app.py                 # Streamlit application (Evaluator, Chatbot, Benchmarks)
 ├── demo.py                # Command-line evaluator
 ├── article_src/           # Model, preprocessing, retrieval, and research code
 ├── checkpoints/           # Git LFS weights and tokenizers
-├── datastore/             # Research datasets and generated-data destinations
-├── annotation_tool/       # Original annotation tooling
+├── datastore/             # Research datasets (English, Hindi, Punjabi)
+│   ├── punjabi/           # Punjabi legal evaluation corpus
+│   └── training/          # Stratified training corpora
+├── docs/                  # IEEE research paper, presentation slides, sample agreements
 ├── paper/                 # Research paper in Word and PDF
+├── predictions/           # Empirical benchmark results and case studies JSON
 ├── tests/                 # Offline regression and UI smoke tests
-├── archive/               # Disabled generators with unverified fixed results
 ├── .env.example           # Optional generation configuration
 └── requirements.txt       # Application dependencies
 ```
